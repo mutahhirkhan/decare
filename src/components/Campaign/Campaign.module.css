@@ -1,0 +1,50 @@
+.Card {
+    cursor: pointer;
+    width: 400px;
+    margin: 15px;
+    float: left;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 10px 10px rgba(0, 0, 0, 0.2);
+    transition: 0.2s all ease;
+    transform: scale(1);
+}
+
+.Card:hover {
+    background-color: rgb(234, 238, 255);
+    transform: scale(1.05);
+}
+
+.Card h1 {
+    text-align: center;
+    border-radius: 10px 10px 0 0;
+    padding: 20px 10px;
+    color: #fff;
+    background-color: #2A265F;
+    margin: 0px;
+}
+
+.Content {
+    color: #949494;
+    margin: 10px;
+    height: 250;
+}
+
+.Owner {
+    margin: 10px;
+    font-weight: bold;
+    color: #4d4d4d;
+}
+
+.DateIcon {
+    color: #4d4d4d;
+    margin-left: 10px;
+}
+
+.DateCreated {
+    display: inline-block;
+    margin-bottom: 10px;
+    margin-top: 0px;
+    font-weight: bold;
+    color: #4d4d4d;
+}
