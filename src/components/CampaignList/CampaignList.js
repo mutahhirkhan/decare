@@ -7,7 +7,7 @@ export const CampaignList = ({ campaigns }) => {
     return (
         <div>
             <h1 className={classes.Heading}>Campaigns</h1>
-            {campaigns.map(c => <Campaign key={c.id} campaignData={c} />)}
+            {campaigns.map(c => <Campaign key={c.id} campaign={c} />)}
         </div>
     );
 }

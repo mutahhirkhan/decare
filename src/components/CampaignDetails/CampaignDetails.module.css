@@ -1,0 +1,50 @@
+
+.Title {
+    color: #1462ff;
+    font-size: 4rem;
+    text-align: left;
+    margin: 0px;
+    font-weight: bold;
+}
+
+.DescriptionContainer {
+    padding: 20px;
+    flex: 60%;
+    margin-top: auto;
+}
+
+.Description {
+    color: #949494;
+    text-align: left;
+}
+
+.CreatedBy {
+    text-align: left;
+    font-weight: bold;
+    color: #4d4d4d;
+}
+
+.DateCreated {
+    display: flex;
+}
+
+.DateIcon {
+    color: #4d4d4d;
+}
+
+.DateCreated div {
+    flex: content;
+}
+
+.DateCreated p {
+    flex: content;
+    display: inline;
+    font-weight: bold;
+    color: #4d4d4d;
+    margin: 0px;
+    margin-left: 5px;
+}
+
+.Dates{
+    display: flex;
+}
