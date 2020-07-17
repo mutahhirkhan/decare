@@ -1,9 +1,10 @@
 import React from 'react'
 import { CampaignList } from '../../components/CampaignList/CampaignList'
+import { Container } from 'react-bootstrap';
 
 export const Campaigns = () => {
     return (
-        <div>
+        <Container>
             <CampaignList campaigns={[
                 {
                     id: 1,
@@ -45,7 +46,7 @@ export const Campaigns = () => {
             >
 
             </CampaignList>
-        </div>
+        </Container>
 
     );
 }
