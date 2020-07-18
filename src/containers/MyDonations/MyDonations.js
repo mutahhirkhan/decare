@@ -5,8 +5,8 @@ import { Container, Card, Row, Col } from 'react-bootstrap';
 
 export const MyDonations = () => {
     return (
-        <React.Fragment>
-            <h1 className='text-center my-5' style={{ color: '#1462ff', fontWeight: 'bold' }}> Your Donations</h1>
+        <Container>
+            <h1 className='text-center my-5' style={{ fontWeight: 'bold' }}> Donations</h1>
             {
                 [
                     {
@@ -99,7 +99,7 @@ export const MyDonations = () => {
                         </Card.Body>
                     </Card>)
             }
-        </React.Fragment>
+        </Container>
     )
 
 }

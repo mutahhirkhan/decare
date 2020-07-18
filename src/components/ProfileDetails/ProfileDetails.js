@@ -13,7 +13,7 @@ export const ProfileDetails = () => {
                     </Col>
                 </Row>
                 <Row >
-                    <Col md='auto' className='mx-auto mt-1 mb-5'>
+                    <Col md='auto' className='mx-auto mt-2 mb-5'>
                         <Button>Upload Image</Button>
                     </Col>
                 </Row>
@@ -24,36 +24,37 @@ export const ProfileDetails = () => {
                         Name
                 </Form.Label>
                     <Col sm="10">
-                        <Form.Control type="password" placeholder="Your Name Here..." />
+                        <Form.Control type="text"  />
                     </Col>
                 </Form.Group>
 
-                <Form.Group as={Row} controlId="formPlaintextPassword">
+                <Form.Group as={Row} controlId="formPlaintextOrganization">
                     <Form.Label column sm="2">
                         Organization Name
                 </Form.Label>
                     <Col sm="10">
-                        <Form.Control type="password" placeholder="Your Organization Name Here...." />
+                        <Form.Control type="text"  />
                     </Col>
                 </Form.Group>
 
-                <Form.Group as={Row} controlId="formPlaintextEmail">
-                    <Form.Label column sm="2">
-                        Email
-                </Form.Label>
-                    <Col sm="10">
-                        <Form.Control plaintext readOnly defaultValue="email@example.com" />
-                    </Col>
-                </Form.Group>
-
-                <Form.Group as={Row} controlId="formPlaintextEmail">
+                <Form.Group as={Row} controlId="bio">
                     <Form.Label column sm="2">
                         Bio
                 </Form.Label>
                     <Col sm="10">
-                        <Form.Control placeholder="Tell something about yourself here..." />
+                        <Form.Control as="textarea" rows='5' />
                     </Col>
                 </Form.Group>
+
+                <Form.Group as={Row} controlId="email">
+                    <Form.Label column sm="2">
+                        Email
+                </Form.Label>
+                    <Col sm="10">
+                        <Form.Control type="text" disabled placeholder="email@example.com" />
+                    </Col>
+                </Form.Group>
+
             </Form>
         </React.Fragment>
     );

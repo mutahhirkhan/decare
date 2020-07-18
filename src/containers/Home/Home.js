@@ -2,7 +2,7 @@ import React from 'react';
 import { Container, Image, Row, Col, Button } from 'react-bootstrap';
 import image from '../../assets/home_image.jpg'
 
-export const Home = () => {
+export const Home = props => {
     return (
         <div style={{ position: 'relative' }}>
 
@@ -18,14 +18,14 @@ export const Home = () => {
                 </Row>
                 <Row>
                     <Col xs={6} className='mt-5'>
-                        <Button size='lg' className='px-5' >Donate Here</Button>
+                        <Button size='lg' className='px-5' onClick={() => props.history.push('/campaigns')}>Donate Here</Button>
                     </Col>
                 </Row>
             </Container>
 
             <Image src={image} style={{ width: '100%' }} />
 
-        </div>
+        </div >
 
     );
 }

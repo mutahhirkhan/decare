@@ -3,11 +3,11 @@ import { CampaignDetails } from '../../components/CampaignDetails/CampaignDetail
 import { TransactionList } from '../../components/TransactionList/TransactionList';
 import { Container } from 'react-bootstrap';
 
-export const CampaignExplorer = () => {
+export const CampaignExplorer = props => {
     return (
         <Container className='mx-auto'>
 
-            <h1 style={{ fontWeight: 'bold' }} className='text-center my-3'>Campaign Details</h1>
+            <h1 style={{ fontWeight: 'bold' }} className='text-center my-3'>Campaign Details. ID: {props.match.params.id}</h1>
 
             <CampaignDetails style={{ boxShadow: '0 10px 10px rgba(0, 0, 0, 0.2)' }} campaign={
                 {
