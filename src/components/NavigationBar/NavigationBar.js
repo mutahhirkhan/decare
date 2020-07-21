@@ -22,8 +22,8 @@ export const NavigationBar = () => {
                         <Nav.Link className='mx-3' as={Link} to='/' href='#home'>Home</Nav.Link>
                         <NavDropdown className='mx-3' title="Campaigns" id="basic-nav-dropdown">
                             <NavDropdown.Item as={Link} to='/campaigns' href='#all_campaigns'>All Campaigns</NavDropdown.Item>
-                            <NavDropdown.Item as={Link} to='/mycampaigns' href='#my_campaigns'>My Campaigns</NavDropdown.Item>
-                            <NavDropdown.Item as={Link} to='/createcampaign' href='#create_campaign'>Create Campaign</NavDropdown.Item>
+                            <NavDropdown.Item as={Link} to='/my_campaigns' href='#my_campaigns'>My Campaigns</NavDropdown.Item>
+                            <NavDropdown.Item as={Link} to='/create_campaign' href='#create_campaign'>Create Campaign</NavDropdown.Item>
                         </NavDropdown>
 
                         <Nav.Link className='mx-3' as={Link} to='/my_donations' href='#my_donations'>My Donations</Nav.Link>

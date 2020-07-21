@@ -1,67 +1,175 @@
-import React from 'react';
-import { Container, Form, Row, Col, InputGroup, Button } from 'react-bootstrap';
-import DatePicker from "react-datepicker";
-
-import "react-datepicker/dist/react-datepicker.css";
+import React, { useState } from 'react';
+import { Container, Form, Col, InputGroup, Button, Spinner } from 'react-bootstrap';
+import { addCampaign } from '../../store/actions/asyncCampaignaActions';
+import { useStore } from '../../context/GlobalState';
+import { Formik, Field } from "formik";
+import { useHistory } from 'react-router-dom';
 
 export const CreateCampaignForm = () => {
+
+    const dispatch = useStore()[1];
+    const routeHistory = useHistory();
+
     return (
         <Container>
             <h1 className='my-4 text-center' style={{ fontWeight: 'bold' }}>Create Campaign</h1>
-            <Form>
+            <Formik
+                initialValues={{
+                    title: '',
+                    description: '',
+                    amount: 0,
+                    startDate: '',
+                    endDate: '',
+                }}
 
-                {/* Campaign Title */}
-                <Form.Group controlId="title">
-                    <Form.Label>Campaign Title</Form.Label>
-                    <Form.Control type="text" />
-                </Form.Group>
+                onSubmit={async (data, { setSubmitting }) => {
+                    setSubmitting(true);
 
-                {/* Campaign Description */}
-                <Form.Group controlId="description">
-                    <Form.Label>Campaign Description</Form.Label>
-                    <Form.Control as="textarea" rows="6" />
-                </Form.Group>
+                    console.log('submitted: ', data);
+                    let campaign = {
+                        title: data.title,
+                        description: data.description,
+                        amount: data.amount,
+                        startDate: new Date(data.startDate),
+                        endDate: new Date(data.endDate)
+                    };
 
+                    // deploy contract
+                    let wasSuccess = await addCampaign(campaign, dispatch);
 
-                {/* Campaign Amount */}
-                <Form.Group controlId="title">
-                    <Form.Label>Amount</Form.Label>
-                    <InputGroup className="mb-2">
-                        <InputGroup.Prepend>
-                            <InputGroup.Text>ETH</InputGroup.Text>
-                        </InputGroup.Prepend>
-                        <Form.Control type="text" />
-                    </InputGroup>
-                </Form.Group>
+                    console.log(wasSuccess);
+                    if (wasSuccess) {
+                        routeHistory.push('/my_campaigns');
+                    }
+                    setSubmitting(false);
 
-                <Form.Row>
-                    {/* Start Date */}
-                    <Col>
-                        <Row>
-                            <Form.Label className='mx-3'>Start Date</Form.Label>
-                        </Row>
-                        <Row>
-                            <DatePicker className='mx-3' />
-                        </Row>
-                    </Col>
+                }}
 
-                    {/* End Date */}
-                    <Col>
-                        <Row>
-                            <Form.Label className='mx-3'>End Date</Form.Label>
-                        </Row>
-                        <Row>
-                            <DatePicker className='mx-3' />
-                        </Row>
-                    </Col>
+                validate={values => {
+                    const errors = {};
 
-                </Form.Row>
-                <Button variant="primary" className='px-5 mt-4' size='lg' type="submit" onClick={(e) => e.preventDefault()}>
-                    Create
-                </Button>
-            </Form>
-        </Container>
+                    // Vaidate Title
+                    if (values.title.length === 0) {
+                        errors.title = 'Title cannot be empty.';
+                    }
+
+                    // Validate Description
+                    if (values.description.length === 0) {
+                        errors.description = 'Description cannot be empty.';
+                    }
+
+                    // Validate Amount
+                    if (isNaN(values.amount)) {
+                        errors.amount = 'Value must be a number.';
+                    } else if (values.amount < 1) {
+                        errors.amount = 'Amount must be greater than zero.';
+                    }
 
 
-    );
+                    // Validate Start Date & End Date
+                    if (!values.startDate) {
+                        errors.startDate = 'Date cannot be empty.';
+                    }
+                    if (!values.endDate) {
+                        errors.endDate = 'Date cannot be empty.';
+                    }
+
+                    let start = new Date(values.startDate);
+                    let end = new Date(values.endDate);
+
+                    //start date should always be lesser than the end date
+                    if (start.getTime() >= end.getTime()) {
+                        errors.startDate = 'Start date should be less than end date.';
+                        errors.endDate = 'End date should be greater than end date.';
+                    }
+
+                    return errors;
+                }}
+
+            >
+                {({ handleSubmit, errors, touched, isSubmitting }) => (
+                    <Form onSubmit={handleSubmit}>
+
+                        {/* Campaign Title */}
+                        <Form.Group controlId="title">
+                            <Form.Label>Campaign Title {isSubmitting.toString()}</Form.Label>
+                            <Field as={Form.Control} type="text" name='title' isInvalid={touched.title && !!errors.title} />
+                            <Form.Control.Feedback type='invalid'>{errors.title}</Form.Control.Feedback>
+                        </Form.Group>
+
+                        {/* Campaign Description */}
+                        <Form.Group controlId="description">
+                            <Form.Label>Campaign Description</Form.Label>
+                            <Field as={Form.Control} type="textarea" rows="6" name='description' isInvalid={touched.description && !!errors.description} />
+                            <Form.Control.Feedback type='invalid'>{errors.description}</Form.Control.Feedback>
+                        </Form.Group>
+
+
+                        {/* Campaign Amount */}
+                        <Form.Group controlId="amount">
+                            <Form.Label>Amount</Form.Label>
+                            <InputGroup className="mb-2">
+                                <Field as={Form.Control} type="text" name='amount' isInvalid={touched.amount && !!errors.amount} />
+                                <InputGroup.Append>
+                                    <InputGroup.Text>ETH</InputGroup.Text>
+                                </InputGroup.Append>
+                                <Form.Control.Feedback type='invalid'>{errors.amount}</Form.Control.Feedback>
+                            </InputGroup>
+                        </Form.Group>
+
+                        <Form.Row>
+
+                            {/* Start Date */}
+                            <Col>
+                                <Form.Group controlId="startDate">
+                                    <Form.Label>Start Date</Form.Label>
+                                    <Field as={Form.Control} type="date" name='startDate' isInvalid={touched.startDate && !!errors.startDate} />
+                                    <Form.Control.Feedback type='invalid'>{errors.startDate}</Form.Control.Feedback>
+                                </Form.Group>
+                            </Col>
+
+                            {/* End Date */}
+                            <Col>
+                                <Form.Group controlId="startDate">
+                                    <Form.Label>End Date</Form.Label>
+                                    <Field as={Form.Control} type="date" name='endDate' isInvalid={touched.endDate && !!errors.endDate} />
+                                    <Form.Control.Feedback type='invalid'>{errors.endDate}</Form.Control.Feedback>
+                                </Form.Group>
+                            </Col>
+
+                        </Form.Row>
+
+
+                        <Form.Row className='mt-4 align-items-center'>
+                            <Col md="auto">
+                                <Button
+                                    disabled={isSubmitting}
+                                    variant="primary"
+                                    className='px-5'
+                                    size='lg'
+                                    type="submit"
+                                >
+                                    {
+                                        isSubmitting ?
+                                            <Spinner animation="border" variant="light" role="status" />
+                                            : 'Create'
+                                    }
+                                </Button>
+                            </Col>
+
+                            {
+                                isSubmitting &&
+                                <Col>
+                                    Please wait while transaction is in progress...
+                                </Col>
+                            }
+                        </Form.Row>
+
+                    </Form>
+                )}
+            </Formik>
+        </Container >
+
+    )
 }
+
