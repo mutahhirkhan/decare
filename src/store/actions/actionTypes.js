@@ -1,3 +1,8 @@
+//Authentication Actions
+export const AUTH_START = 'AUTH_START';
+export const AUTH_SUCCESS = 'AUTH_SUCCESS';
+export const AUTH_FAIL = 'AUTH_FAIL';
+
 //Campaign Actions
 export const ADD_CAMPAIGN = 'ADD_CAMPAIGN';
 export const CAMPAIGN_ADD_SUCCESS = 'CAMPAIGN_ADD_SUCCESS';

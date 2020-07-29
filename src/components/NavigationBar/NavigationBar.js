@@ -7,7 +7,7 @@ import { NavLink, Link } from 'react-router-dom';
 export const NavigationBar = () => {
     return (
         <div>
-            <Navbar expand='md' bg="primary" variant="dark">
+            <Navbar expand='lg' bg="primary" variant="dark">
                 <Navbar.Brand style={{ fontWeight: 'bold' }} href="/">
                     <Image width="30"
                         height="30"

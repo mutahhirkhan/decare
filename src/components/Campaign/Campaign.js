@@ -7,12 +7,12 @@ import { IconContext } from "react-icons"
 export const Campaign = ({ campaign, history }) => {
 
     return (
-        <Link className={classes.Card} to={`/campaign${campaign.id}`}>
+        <Link className={classes.Card} to={`/campaign${campaign.address}`}>
             <h1> {campaign.title} </h1>
-            <p className={classes.Description} > {campaign.description} </p>
-            <p className={classes.CreatedBy} > Created By: {campaign.createdBy} </p>
+            <p className={classes.description} > {campaign.description} </p>
+            <p className={classes.CreatedBy} > Created By: {campaign.manager} </p>
             <IconContext.Provider value={{ className: classes.DateIcon }}>
-                <FaCalendarAlt />  <p className={classes.DateCreated}> {campaign.dateCreated}</p>
+                <FaCalendarAlt />  <p className={classes.DateCreated}> {campaign.createdAt.toDateString()}</p>
             </IconContext.Provider>
         </Link>
     );

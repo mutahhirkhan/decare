@@ -1,28 +1,37 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { CampaignDetails } from '../../components/CampaignDetails/CampaignDetails';
 import { TransactionList } from '../../components/TransactionList/TransactionList';
-import { Container } from 'react-bootstrap';
+import { Container, Spinner, Row, Col } from 'react-bootstrap';
+import * as ethService from '../../services/EthService';
 
 export const CampaignExplorer = props => {
+    const [campaign, setCampaign] = useState({});
+    const [loading, setLoading] = useState(true);
+
+    const loadCampaign = async () => {
+        let c = await ethService.getCampaign(props.match.params.address);
+        setLoading(false);
+        setCampaign(c);
+    }
+
+    useEffect(() => {
+        loadCampaign();
+    }, [])
+
     return (
         <Container className='mx-auto'>
 
-            <h1 style={{ fontWeight: 'bold' }} className='text-center my-3'>Campaign Details. ID: {props.match.params.id}</h1>
+            <h1 style={{ fontWeight: 'bold' }} className='text-center my-3'>Campaign Details.</h1>
 
-            <CampaignDetails style={{ boxShadow: '0 10px 10px rgba(0, 0, 0, 0.2)' }} campaign={
-                {
-                    id: 1,
-                    title: "Lorem Dolor Sit Amet",
-                    description: "Aliquam erat volutpat. In lacinia velit ut massa porta elementum. Integer ornare, augue ut malesuada viverra, leo nisl pretium metus, vel ullamcorper nunc lorem a nisi. Duis eu sapien quis mauris convallis finibus vel et dui. Proin vel lacinia risus, iaculis mollis erat. Phasellus tincidunt dui elit, sed fringilla est maximus eu. Curabitur ut tempus mauris. Suspendisse potenti.",
-                    createdBy: "DeCare NGO",
-                    startDate: new Date().toDateString(),
-                    endDate: new Date().toDateString(),
-                    status: 'Open',
-                    goalAmount: '20 ETH',
-                    collectedAmount: '15 ETH'
-                }
-
-            } />
+            {
+                loading ?
+                    <Row className='align-items-center justify-content-center my-3'>
+                        <Col md='auto'>
+                            <Spinner className='text-center' animation="border" variant="primary" role="status" />
+                        </Col>
+                    </Row>
+                    : <CampaignDetails style={{ boxShadow: '0 10px 10px rgba(0, 0, 0, 0.2)' }} campaign={campaign} />
+            }
 
             <h1 style={{ fontWeight: 'bold' }} className='text-center mt-5 mb-3'>Donations</h1>
 

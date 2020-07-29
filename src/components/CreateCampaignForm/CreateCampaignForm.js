@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Container, Form, Col, InputGroup, Button, Spinner } from 'react-bootstrap';
-import { addCampaign } from '../../store/actions/asyncCampaignaActions';
+import { createCampaign } from '../../store/actions/asyncCampaignActions';
 import { useStore } from '../../context/GlobalState';
 import { Formik, Field } from "formik";
 import { useHistory } from 'react-router-dom';
@@ -25,17 +25,17 @@ export const CreateCampaignForm = () => {
                 onSubmit={async (data, { setSubmitting }) => {
                     setSubmitting(true);
 
-                    console.log('submitted: ', data);
                     let campaign = {
                         title: data.title,
                         description: data.description,
                         amount: data.amount,
-                        startDate: new Date(data.startDate),
-                        endDate: new Date(data.endDate)
+                        createTimestamp: Math.floor(new Date(data.startDate).getTime() / 1000),
+                        closeTimestamp: Math.floor(new Date(data.endDate).getTime() / 1000)
                     };
 
+                    console.log('submitted: ', campaign);
                     // deploy contract
-                    let wasSuccess = await addCampaign(campaign, dispatch);
+                    let wasSuccess = await createCampaign(campaign, dispatch);
 
                     console.log(wasSuccess);
                     if (wasSuccess) {
@@ -92,7 +92,7 @@ export const CreateCampaignForm = () => {
 
                         {/* Campaign Title */}
                         <Form.Group controlId="title">
-                            <Form.Label>Campaign Title {isSubmitting.toString()}</Form.Label>
+                            <Form.Label>Campaign Title</Form.Label>
                             <Field as={Form.Control} type="text" name='title' isInvalid={touched.title && !!errors.title} />
                             <Form.Control.Feedback type='invalid'>{errors.title}</Form.Control.Feedback>
                         </Form.Group>
