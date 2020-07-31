@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Container, Form, Col, InputGroup, Button, Spinner } from 'react-bootstrap';
-import { createCampaign } from '../../store/actions/asyncCampaignActions';
+import { createCampaign } from '../../store/actions/campaignActions';
 import { useStore } from '../../context/GlobalState';
 import { Formik, Field } from "formik";
 import { useHistory } from 'react-router-dom';
@@ -34,10 +34,10 @@ export const CreateCampaignForm = () => {
                     };
 
                     console.log('submitted: ', campaign);
+                    
                     // deploy contract
                     let wasSuccess = await createCampaign(campaign, dispatch);
 
-                    console.log(wasSuccess);
                     if (wasSuccess) {
                         routeHistory.push('/my_campaigns');
                     }

@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react'
+import React, { Suspense, useEffect } from 'react'
 import { NavigationBar } from '../components/NavigationBar/NavigationBar';
 import { Home } from '../containers/Home/Home';
 import { Campaigns } from '../containers/Campaigns/Campaigns'
@@ -11,9 +11,24 @@ import { AlertsList } from '../components/AlertsList/AlertsList';
 import { MyCampaigns } from '../containers/MyCampaigns/MyCampaigns';
 import { Footer } from '../components/Footer/Footer';
 import { SignIn } from '../components/SignIn/SignIn';
-
+import { NoMetamaskMessage } from '../components/NoMetamaskMessage/NoMetamaskMessage';
+import { useStore } from '../context/GlobalState';
+import { enable } from '../services/EthService';
+import { metamaskEnabled } from '../store/actions/metamaskActions';
 
 export const Layout = props => {
+    const [{ metamask }, dispatch] = useStore();
+    useEffect(() => {
+
+        //do not make useEffect directly async rather use an async function inside it
+        const enableMetamask = async () => {
+            const isEnabled = await enable();
+            if (isEnabled) {
+                dispatch(metamaskEnabled());
+            }
+        }
+        enableMetamask();
+    }, []);
 
     let routes = (
         <Switch>
@@ -29,18 +44,18 @@ export const Layout = props => {
     )
 
     return (
-        <React.Fragment>
+        metamask.isEnabled ?
+            <React.Fragment>
+                {/* Navigation Bar */}
+                <NavigationBar />
 
-            {/* Navigation Bar */}
-            <NavigationBar />
+                {/* Alerts as notifications */}
+                <AlertsList />
 
-            {/* Alerts as notifications */}
-            <AlertsList />
+                {/* This will load the proper page according to the given route */}
+                <Suspense fallback={<p>Loading...</p>}>{routes}</Suspense>
 
-            {/* This will load the proper page according to the given route */}
-            <Suspense fallback={<p>Loading...</p>}>{routes}</Suspense>
-
-            <Footer />
-        </React.Fragment>
+                <Footer />
+            </React.Fragment> : <NoMetamaskMessage />
     );
 }

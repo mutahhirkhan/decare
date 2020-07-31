@@ -1,10 +1,14 @@
 import React from "react";
 import logo from '../../assets/decare_logo.png'
-import { Navbar, Nav, Image, NavDropdown } from "react-bootstrap";
-import { NavLink, Link } from 'react-router-dom';
+import { Navbar, Nav, Image, NavDropdown, Spinner } from "react-bootstrap";
+import { Link } from 'react-router-dom';
+import { useStore } from '../../context/GlobalState';
+import { signOut } from '../../store/actions/authActions';
 
 
 export const NavigationBar = () => {
+    const [{ auth }, dispatch] = useStore();
+
     return (
         <div>
             <Navbar expand='lg' bg="primary" variant="dark">
@@ -29,7 +33,11 @@ export const NavigationBar = () => {
                         <Nav.Link className='mx-3' as={Link} to='/my_donations' href='#my_donations'>My Donations</Nav.Link>
                         <Nav.Link className='mx-3' as={Link} to='/profile' href='#profile'>Profile</Nav.Link>
                         <Nav.Link className='mx-3' href='https://github.com/AbdulRafaySiddiqui/' target="_blank">Github</Nav.Link>
-                        <Nav.Link className='mx-3' as={Link} to='/'>About</Nav.Link>
+                        {/* <Nav.Link className='mx-3' as={Link} to='/about'>About</Nav.Link> */}
+                        {
+                            auth.loading ? <Spinner animation="grow" variant="light" role="status" /> :
+                                <Nav.Link className='mx-3' as={Link} onClick={dispatch(signOut())} to='/signin'>Sign Out</Nav.Link>
+                        }
                     </Nav>
                 </Navbar.Collapse>
             </Navbar>

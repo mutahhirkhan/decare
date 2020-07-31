@@ -17,9 +17,12 @@ let currentAccount;
 let web3 = new Web3(Web3.givenProvider);
 
 export const enable = async () => {
-    if (web3.givenProvider)
+    if (web3.givenProvider) {
         window.ethereum.enable();
-    currentAccount = await getCurrrentAccount();
+        currentAccount = await getCurrrentAccount();
+        return true;
+    }
+    return false;
 }
 
 const getCurrrentAccount = async () => {
@@ -53,8 +56,8 @@ export const getCampaign = async (address) => {
         amountDelegated: summary[5],
         amountSpended: summary[6],
         fundRequestProcessTime: summary[7],
-        createdAt: new Date(summary[8]*1000),
-        closedAt: new Date(summary[9]*1000),
+        createdAt: new Date(summary[8] * 1000),
+        closedAt: new Date(summary[9] * 1000),
         donorsCount: summary[10],
         fundRequestsCount: summary[11],
         address: address
