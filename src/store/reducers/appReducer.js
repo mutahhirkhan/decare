@@ -1,13 +1,15 @@
 import alertReducer from './alertReducer';
 import campaignReducer from './campaignReducer';
 import authReducuer from './authReducer';
-import metamaskReducer from './metamaskReducer';
+import userReducer from './userReducer';
+import startupReducer from './startupReducer';
 
-export const appReducer = ({ alertList, campaigns, auth, metamask }, action) => {
+export const appReducer = ({ alertList, campaigns, auth, startupState, user }, action) => {
     return {
         alertList: alertReducer(alertList, action),
         campaigns: campaignReducer(campaigns, action),
         auth: authReducuer(auth, action),
-        metamask: metamaskReducer(metamask, action)
+        user: userReducer(user, action),
+        startupState: startupReducer(startupState, action)
     }
 }

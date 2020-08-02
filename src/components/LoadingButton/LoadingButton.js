@@ -4,8 +4,8 @@ import { Button, Spinner } from 'react-bootstrap';
 export const LoadingButton = props => {
     return (
         <div>
-            <Button className='btn-block' size='lg' type={props.type} onClick={e => props.onClick(e)}>
-                {props.isLoading ? <Spinner animation="grow" variant="light" role="status" /> : props.children}
+            <Button className='btn-block' size='lg' {...props} >
+                {props.isloading ? <Spinner animation="grow" variant="light" role="status" /> : props.children}
             </Button>
         </div>
     );

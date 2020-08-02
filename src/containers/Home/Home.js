@@ -1,8 +1,11 @@
 import React from 'react';
 import { Container, Image, Row, Col, Button, Card } from 'react-bootstrap';
 import image from '../../assets/home_image.png';
+import { useStore } from '../../context/GlobalState';
 
 export const Home = props => {
+    const [{ auth }, dispatch] = useStore();
+
     const cardStyle =
     {
         marginTop: '10px',
@@ -25,7 +28,11 @@ export const Home = props => {
                         </h1>
                     </Row>
                     <Row className='align-items-center justify-content-center '>
-                        <Button size='lg' className='px-5' onClick={() => props.history.push('/signin')}>Sign In</Button>
+                        {
+                            !auth.isAuthenticated ?
+                                <Button size='lg' className='px-5' onClick={() => props.history.push('/signin')}>Sign In</Button>
+                                : null
+                        }
                     </Row>
                 </Col>
             </Row>

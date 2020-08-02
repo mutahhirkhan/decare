@@ -1,41 +1,35 @@
 import { AUTH_START, AUTH_SUCCESS, AUTH_FAIL, SIGN_OUT } from '../actions/actionTypes';
 
-const initialeState = [{
+const initialeState = {
     isAuthenticated: true,
-    userId: null,
-    token: null,
     loading: false
-}]
+}
 
 export default (state = initialeState, action) => {
     switch (action.type) {
         case AUTH_START:
-            return [{
+            return {
                 ...state,
                 loading: true
-            }];
+            };
         case AUTH_SUCCESS:
-            return [{
+            return {
                 ...state,
-                isAuthenticated: false,
+                isAuthenticated: true,
                 loading: false,
-                userId: action.payload.userId,
-                token: action.payload.token
-            }];
+            };
         case AUTH_FAIL:
-            return [{
+            return {
                 ...state,
                 isAuthenticated: false,
                 loading: false
-            }];
+            };
         case SIGN_OUT:
-            return [{
+            return {
                 ...state,
                 isAuthenticated: false,
-                loading: false,
-                userId: null,
-                token: null
-            }];
+                loading: false
+            };
         default:
             return state;
     }

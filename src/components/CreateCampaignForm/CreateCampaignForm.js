@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Container, Form, Col, InputGroup, Button, Spinner } from 'react-bootstrap';
+import { Container, Form, Col, Row, InputGroup, Alert } from 'react-bootstrap';
 import { createCampaign } from '../../store/actions/campaignActions';
 import { useStore } from '../../context/GlobalState';
 import { Formik, Field } from "formik";
 import { useHistory } from 'react-router-dom';
+import { LoadingButton } from '../LoadingButton/LoadingButton';
 
 export const CreateCampaignForm = () => {
 
@@ -33,8 +34,6 @@ export const CreateCampaignForm = () => {
                         closeTimestamp: Math.floor(new Date(data.endDate).getTime() / 1000)
                     };
 
-                    console.log('submitted: ', campaign);
-                    
                     // deploy contract
                     let wasSuccess = await createCampaign(campaign, dispatch);
 
@@ -140,30 +139,19 @@ export const CreateCampaignForm = () => {
                         </Form.Row>
 
 
-                        <Form.Row className='mt-4 align-items-center'>
-                            <Col md="auto">
-                                <Button
-                                    disabled={isSubmitting}
-                                    variant="primary"
-                                    className='px-5'
-                                    size='lg'
-                                    type="submit"
-                                >
-                                    {
-                                        isSubmitting ?
-                                            <Spinner animation="border" variant="light" role="status" />
-                                            : 'Create'
-                                    }
-                                </Button>
-                            </Col>
-
+                        <Row className='justify-content-end align-items-end my-4'>
                             {
                                 isSubmitting &&
                                 <Col>
-                                    Please wait while transaction is in progress...
+                                    <Alert style={{ marginBottom: '0' }} variant='warning'>Please wait while transaction is in progress...</Alert>
                                 </Col>
                             }
-                        </Form.Row>
+                            <Col md="auto" >
+                                <LoadingButton isLoading={isSubmitting} type='submit' className='px-5'>
+                                    Create
+                                </LoadingButton>
+                            </Col>
+                        </Row>
 
                     </Form>
                 )}

@@ -5,11 +5,14 @@ let initialState = {
     alertList: [],
     campaigns: [],
     auth: {
-        loading: false
+        isAuthenticated: true,
+        isLoading: false
     },
-    metamask: {
-        isEnabled: false
-    }
+    startupState: {
+        isMetamaskEnabled: false,
+        isAppLoaded: false,
+    },
+    user: {}
 }
 
 // Create context

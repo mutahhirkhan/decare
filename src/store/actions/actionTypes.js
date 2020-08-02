@@ -1,5 +1,10 @@
+export const APP_LOADED = 'APP_LOADED';
+
 //Enable meta mask
 export const ENABLE_METAMASK = 'ENABLE_METAMASK';
+
+//User actions
+export const SET_USER_DETAILS = 'SET_USER_DETAILS';
 
 //Authentication Actions
 export const AUTH_START = 'AUTH_START';

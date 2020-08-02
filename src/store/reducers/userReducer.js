@@ -1,14 +1,12 @@
-import { ENABLE_METAMASK } from '../actions/actionTypes';
+import { SET_USER_DETAILS } from '../actions/actionTypes';
 
-const initialeState = {
-    isEnabled: false
-}
+const initialeState = {}
 
 export default (state = initialeState, action) => {
     switch (action.type) {
-        case ENABLE_METAMASK:
+        case SET_USER_DETAILS:
             return {
-                isEnabled: true
+                ...action.payload.user
             };
         default:
             return state;

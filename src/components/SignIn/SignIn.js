@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Container, Row, Col, Form, Card } from 'react-bootstrap';
 import { LoadingButton } from '../LoadingButton/LoadingButton';
 import { useStore } from '../../context/GlobalState';
-import { authenticate } from '../../store/actions/authActions';
+import { authenticateAsync } from '../../store/actions/authActions';
 import { useHistory } from 'react-router-dom';
 
 export const SignIn = () => {
@@ -28,8 +28,8 @@ export const SignIn = () => {
     }
 
     const authenticateHandler = async (e) => {
-        let wasAuthSuccess = await authenticate(email, password, isSignUp, dispatch);
-        if (wasAuthSuccess) {
+        let wasSuccess = await authenticateAsync(email, password, isSignUp, dispatch);
+        if (wasSuccess) {
             if (isSignUp) {
                 routeHistory.push('/profile');
             }
@@ -61,9 +61,12 @@ export const SignIn = () => {
                                     <Form.Control.Feedback type='invalid'>Password cannot be emmpty</Form.Control.Feedback>
                                 </Form.Group>
 
-                                <LoadingButton isLoading={auth.loading} onClick={(e) => authenticateHandler(e)}>
+                                {/* Sign in */}
+                                <LoadingButton isLoading={auth.isLoading} onClick={(e) => authenticateHandler(e)}>
                                     {isSignUp ? 'Sign Up' : 'Sign In'}
                                 </LoadingButton>
+
+                                {/* Sign in/up toggle */}
                                 <div style={{ textDecoration: 'none', marginTop: '10px' }}>
                                     <a style={{ textDecoration: 'none' }}
                                         className='text-align-center mt-5'

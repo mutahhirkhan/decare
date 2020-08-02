@@ -7,7 +7,7 @@ export const NoMetamaskMessage = () => {
         <Container>
             <Row className='vh-100 justify-content-center'>
                 <Col className='my-auto mx-3' lg='4' md='6'>
-                    <h1>No Metamask Found! You need metamask to use this Dapp, please install the meatamask extension before proceeding</h1>
+                    <h1>Metamask is not enabled/installed! You need to enable/install metamask to use this Dapp.</h1>
                 </Col>
             </Row>
         </Container>
