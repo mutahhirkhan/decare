@@ -1,7 +1,8 @@
 import Web3 from "web3";
-import { abi as CAMPAIGN_ABI } from '../contract/Campaign.json';
-import { abi as CAMPAIGN_FACTORY_ABI } from '../contract/CampaignFactory.json';
-import { LOCAL_CAMAPAIGN_FACTORY_ADDRESS, ROPSTEN_CAMAPAIGN_FACTORY_ADDRESS } from '../contract/CAMPAIGN_FACTORY_ADDRESS';
+import { abi as CAMPAIGN_ABI } from '../../contract/Campaign.json';
+import { abi as CAMPAIGN_FACTORY_ABI } from '../../contract/CampaignFactory.json';
+import { LOCAL_CAMAPAIGN_FACTORY_ADDRESS, ROPSTEN_CAMAPAIGN_FACTORY_ADDRESS } from '../../contract/CAMPAIGN_FACTORY_ADDRESS';
+import { setCurrentAccount } from '../../store/actions/appStateActions';
 
 // var provider = 'http://127.0.0.1:7545';
 var Contract = require('web3-eth-contract');
@@ -16,10 +17,20 @@ let currentAccount;
 //web3 singleton
 let web3 = new Web3(Web3.givenProvider);
 
-export const enable = async () => {
+//listen for metamask account change
+export const listenAccountChange = (dispatch) => {
+    window.ethereum.on('accountsChanged', function (accounts) {
+        currentAccount = accounts[0];
+        dispatch(setCurrentAccount(accounts[0]));
+    });
+}
+
+export const enable = async (dispatch) => {
     if (web3.givenProvider) {
         window.ethereum.enable();
         currentAccount = await getCurrrentAccount();
+        dispatch(setCurrentAccount(currentAccount));
+
         return true;
     }
     return false;

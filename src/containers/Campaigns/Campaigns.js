@@ -1,18 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { CampaignList } from '../../components/CampaignList/CampaignList';
 import { Container, Spinner, Row, Col } from 'react-bootstrap';
-import * as ethService from '../../services/EthService';
-import { useStore } from '../../context/GlobalState';
+import * as ethService from '../../services/ethereum/ethService';
 
 
 export const Campaigns = () => {
-    // const [{ campaigns }, dispatch] = useStore();
     const [campaigns, setCampaigns] = useState([]);
     const [count, setCount] = useState(0);
 
     const loadCampaigns = useCallback(async () => {
-        await ethService.enable();
-
         //get campaign count
         let newCount = await ethService.getCampaignsCount();
         setCount(newCount);
@@ -30,8 +26,6 @@ export const Campaigns = () => {
     });
 
     useEffect(() => {
-        console.log('loading');
-
         loadCampaigns();
     }, []);
 

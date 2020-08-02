@@ -1,10 +1,11 @@
 import React, { useState } from 'react'
-import { Form, Col, Row, Container, Image, Button } from 'react-bootstrap';
+import { Form, Col, Row, Container, Image } from 'react-bootstrap';
 import { Formik, Field } from "formik";
-import { uploadProfilePic } from '../../firebase/storageService';
+import { uploadProfilePic, deleteProfilePic } from '../../services/firebase/storageService';
 import { LoadingButton } from '../LoadingButton/LoadingButton';
-import { addUser, getUserByAddress } from '../../firebase/databaseService';
+import { addUser, getUserByAddress, getUserByEmail } from '../../services/firebase/databaseService';
 import { useStore } from '../../context/GlobalState';
+import { setUserDetails } from '../../store/actions/userActions';
 
 export const ProfileDetails = () => {
     const [{ user }, dispatch] = useStore();
@@ -14,17 +15,25 @@ export const ProfileDetails = () => {
     const selectFileHandler = e => {
         if (e.target.files[0]) {
             setFile(e.target.files[0]);
+            // console.log(URL.creatObjectURL(e.target.files[0]));
         }
     }
 
     return (
         <React.Fragment>
-            <Container className='justify-content-center'>
-                <Row >
-                    <Col md='auto' className='mx-auto mt-5'>
-                        <Image src={user.imgUrl ? user.imgUrl : "https://www.pavilionweb.com/wp-content/uploads/2017/03/man-300x300.png"}
+            <Container >
+                <Row className="justify-content-center">
+                    <Col xs='auto' className='mt-5'>
+                        <Image src=
+                            {
+                                file ? URL.createObjectURL(file) :
+                                    user.imgUrl ?
+                                        user.imgUrl
+                                        : "https://www.pavilionweb.com/wp-content/uploads/2017/03/man-300x300.png"
+                            }
                             roundedCircle
-                            height='200px' />
+                            height='200px'
+                            width='200px' />
                     </Col>
                 </Row>
 
@@ -37,18 +46,24 @@ export const ProfileDetails = () => {
                 }}
                 onSubmit={async (data, { setSubmitting }) => {
                     setSubmitting(true);
+                    let imgUrl = null;
+                    if (file) {
 
-                    //upload profile pic
-                    // await uploadProfilePic(file);
-                    await addUser('0x123',
+                        //upload new profile pic (previous file will be overridden)
+                        imgUrl = await uploadProfilePic(file, user.address);
+                    }
+                    //addUser can also update user because it just overrides the data
+                    await addUser(user.address,
                         {
-                            name: 'test user 1',
-                            email: 'test@test.com',
-                            bio: 'developer',
+                            ...user,
+                            name: data.name,
+                            organizationName: data.organizationName,
+                            bio: data.bio,
+                            imgUrl: imgUrl ? imgUrl : user.imgUrl ? user.imgUrl : ''
                         });
 
-                    const user = await getUserByAddress('0x123');
-                    console.log(user);
+                    const userInfo = await getUserByEmail(user.email);
+                    dispatch(setUserDetails(userInfo));
 
                     setSubmitting(false);
                 }}
@@ -67,7 +82,7 @@ export const ProfileDetails = () => {
 
                         <Form onSubmit={handleSubmit}>
                             <Form.Group as={Row} controlid="image">
-                                <Col md='auto' className='mx-auto mt-2 mb-5'>
+                                <Col xs='auto' className='mx-auto mt-2 mb-5'>
                                     <Form.File
                                         onChange={selectFileHandler}
                                         id="custom-file-translate-scss"
@@ -111,6 +126,14 @@ export const ProfileDetails = () => {
                                 <Form.Label column sm="2">Email</Form.Label>
                                 <Col sm="10">
                                     <Form.Control type="text" disabled placeholder={user.email} />
+                                </Col>
+                            </Form.Group>
+
+                            {/* Account Address */}
+                            <Form.Group as={Row} controlId="account">
+                                <Form.Label column sm="2">Account Address</Form.Label>
+                                <Col sm="10">
+                                    <Form.Control type="text" disabled placeholder={user.address} />
                                 </Col>
                             </Form.Group>
 

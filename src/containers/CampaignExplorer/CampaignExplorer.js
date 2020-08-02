@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { CampaignDetails } from '../../components/CampaignDetails/CampaignDetails';
 import { TransactionList } from '../../components/TransactionList/TransactionList';
 import { Container, Spinner, Row, Col } from 'react-bootstrap';
-import * as ethService from '../../services/EthService';
+import * as ethService from '../../services/ethereum/ethService';
 
 export const CampaignExplorer = props => {
     const [campaign, setCampaign] = useState({});

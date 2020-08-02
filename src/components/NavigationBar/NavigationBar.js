@@ -33,7 +33,7 @@ export const NavigationBar = () => {
         const signOutButton =
             <NavDropdown key={guid()} className='mx-3' alignRight
                 title={
-                    <Image height='30px' roundedCircle src={user.imgUrl ? user.imgUrl : "https://www.pavilionweb.com/wp-content/uploads/2017/03/man-300x300.png"}></Image>
+                    <Image height='30px' width='30px' roundedCircle src={user.imgUrl ? user.imgUrl : "https://www.pavilionweb.com/wp-content/uploads/2017/03/man-300x300.png"}></Image>
                 }
                 id="basic-nav-dropdown">
                 <NavDropdown.Item as={Link} to='/profile' href='#profile'>Profile</NavDropdown.Item>

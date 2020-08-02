@@ -8,9 +8,11 @@ const read = async (path) => {
     return (await database.ref(path).once('value')).val();
 }
 
+//-------------------------------PUBLIC METHODS---------------------------------
 export const addUser = async (address, user) => {
     await write(`users/${address}`, user);
 }
+
 
 export const getUserByAddress = async (address) => {
     return read(`users/${address}`);

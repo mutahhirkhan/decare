@@ -1,14 +1,15 @@
-import { enable } from '../services/EthService';
-import { metamaskEnabled, appLoaded } from '../store/actions/startupActions';
+import { metamaskEnabled, appLoaded } from '../store/actions/appStateActions';
 import { setUserDetails } from '../store/actions/userActions';
-import { signOut, authSuccess } from '../store/actions/authActions';
-import { onAuthStateChanged } from '../firebase/authService';
-import { getUserByEmail } from '../firebase/databaseService';
+import { signOut, authsuccessded } from '../store/actions/authActions';
+import { onAuthStateChanged } from '../services/firebase/authService';
+import { getUserByEmail } from '../services/firebase/databaseService';
+import { enable, listenAccountChange } from '../services/ethereum/ethService';
 
 
 export const setupApp = async (dispatch) => {
+
     //setup metamask
-    const isEnabled = await enable();
+    const isEnabled = await enable(dispatch);
     if (isEnabled) {
         dispatch(metamaskEnabled());
     }
@@ -23,11 +24,14 @@ export const setupApp = async (dispatch) => {
             dispatch(setUserDetails(userInfo));
 
             //dispatch successfull sign in
-            dispatch(authSuccess());
+            dispatch(authsuccessded());
         }
         else {
             dispatch(signOut());
         }
         dispatch(appLoaded());
     });
+
+    //listen account changed events
+    listenAccountChange(dispatch);
 }

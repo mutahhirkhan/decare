@@ -1,5 +1,5 @@
 import { ADD_CAMPAIGN } from './actionTypes';
-import * as ethService from '../../services/EthService';
+import * as ethService from '../../services/ethereum/ethService';
 import { showError, showMessage, showSuccess, showWarning } from './alertAction';
 
 export const addCampaign = (campaign) => {

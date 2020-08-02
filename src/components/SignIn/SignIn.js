@@ -6,7 +6,7 @@ import { authenticateAsync } from '../../store/actions/authActions';
 import { useHistory } from 'react-router-dom';
 
 export const SignIn = () => {
-    const [{ auth }, dispatch] = useStore();
+    const [{ auth, appState }, dispatch] = useStore();
     const [isSignUp, setIsSignUp] = useState(false);
 
     const [email, setEmail] = useState('');
@@ -28,7 +28,7 @@ export const SignIn = () => {
     }
 
     const authenticateHandler = async (e) => {
-        let wasSuccess = await authenticateAsync(email, password, isSignUp, dispatch);
+        let wasSuccess = await authenticateAsync(appState.currentAccount, email, password, isSignUp, dispatch);
         if (wasSuccess) {
             if (isSignUp) {
                 routeHistory.push('/profile');
@@ -62,9 +62,17 @@ export const SignIn = () => {
                                 </Form.Group>
 
                                 {/* Sign in */}
-                                <LoadingButton isLoading={auth.isLoading} onClick={(e) => authenticateHandler(e)}>
+                                <LoadingButton isloading={auth.isLoading} onClick={(e) => authenticateHandler(e)}>
                                     {isSignUp ? 'Sign Up' : 'Sign In'}
                                 </LoadingButton>
+
+                                {
+                                    isSignUp &&
+                                    <div>
+                                        <p>NOTE: This metamask account will be linked to your account permenantly and you cannot change it later!</p>
+                                        <p>Selected Account: <b>{appState.currentAccount}</b></p>
+                                    </div>
+                                }
 
                                 {/* Sign in/up toggle */}
                                 <div style={{ textDecoration: 'none', marginTop: '10px' }}>

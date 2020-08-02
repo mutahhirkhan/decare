@@ -1,22 +1,22 @@
 import { AUTH_START, AUTH_SUCCESS, AUTH_FAIL, SIGN_OUT } from '../actions/actionTypes';
 import { showError } from '../actions/alertAction';
-import * as authService from '../../firebase/authService'
-import * as dbService from '../../firebase/databaseService'
+import * as authService from '../../services/firebase/authService'
+import * as dbService from '../../services/firebase/databaseService'
 import { setUserDetails } from './userActions';
 
-export const authStart = () => {
+export const authStarted = () => {
     return {
         type: AUTH_START,
     }
 }
 
-export const authSuccess = () => {
+export const authsuccessded = () => {
     return {
         type: AUTH_SUCCESS,
     }
 }
 
-export const authFail = () => {
+export const authFailed = () => {
     return {
         type: AUTH_FAIL
     }
@@ -29,17 +29,19 @@ export const signOut = () => {
     };
 }
 
-export const authenticateAsync = async (email, password, isSignup, dispatch) => {
+export const authenticateAsync = async (address, email, password, isSignup, dispatch) => {
     try {
+        dispatch(authStarted());
         if (isSignup) {
             await authService.signUpUser(email, password);
-            await dbService.addUser('0x123', {
-                email: email,
+            await dbService.addUser(address, {
                 name: '',
+                email: email,
                 organizationName: '',
                 bio: '',
-                address: '0x123',
-                imgUrl: ''
+                address: address,
+                imgUrl: '',
+                campaigns: {}
             });
             const user = await dbService.getUserByEmail(email);
             dispatch(setUserDetails(user));
@@ -49,9 +51,11 @@ export const authenticateAsync = async (email, password, isSignup, dispatch) => 
             const user = await dbService.getUserByEmail(email);
             dispatch(setUserDetails(user));
         }
+        dispatch(authsuccessded());
         return true;
     }
     catch (e) {
+        dispatch(authFailed());
         switch (e.code) {
             case 'auth/user-not-found':
                 dispatch(showError("Invalid email address"));

@@ -8,9 +8,13 @@ let initialState = {
         isAuthenticated: true,
         isLoading: false
     },
-    startupState: {
+    appState: {
         isMetamaskEnabled: false,
         isAppLoaded: false,
+        currentAccount: null,
+        //indicates if the selected metamask account address is the same as the 
+        //account address user provided while signing up
+        isUserAccountSelected: true
     },
     user: {}
 }

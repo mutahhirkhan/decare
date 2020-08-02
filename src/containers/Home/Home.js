@@ -2,9 +2,10 @@ import React from 'react';
 import { Container, Image, Row, Col, Button, Card } from 'react-bootstrap';
 import image from '../../assets/home_image.png';
 import { useStore } from '../../context/GlobalState';
+import { Footer } from '../../components/Footer/Footer';
 
 export const Home = props => {
-    const [{ auth }, dispatch] = useStore();
+    const [{ auth }] = useStore();
 
     const cardStyle =
     {
@@ -77,6 +78,7 @@ export const Home = props => {
                     </Col>
                 </Row>
             </Container>
+            <Footer />
 
         </div>
 

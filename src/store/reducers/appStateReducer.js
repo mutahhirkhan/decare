@@ -1,9 +1,6 @@
-import { ENABLE_METAMASK, APP_LOADED } from '../actions/actionTypes';
+import { ENABLE_METAMASK, APP_LOADED, SET_CURRENT_ACCOUNT } from '../actions/actionTypes';
 
-const initialeState = {
-    isMetamaskEnabled: false,
-    isAppLoaded: false
-}
+const initialeState = {}
 
 export default (state = initialeState, action) => {
     switch (action.type) {
@@ -16,6 +13,11 @@ export default (state = initialeState, action) => {
             return {
                 ...state,
                 isAppLoaded: true
+            };
+        case SET_CURRENT_ACCOUNT:
+            return {
+                ...state,
+                currentAccount: action.payload
             };
         default:
             return state;
