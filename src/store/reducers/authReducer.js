@@ -2,7 +2,7 @@ import { AUTH_START, AUTH_SUCCESS, AUTH_FAIL, SIGN_OUT } from '../actions/action
 
 const initialeState = {
     isAuthenticated: true,
-    loading: false
+    isLoading: false
 }
 
 export default (state = initialeState, action) => {
@@ -10,25 +10,25 @@ export default (state = initialeState, action) => {
         case AUTH_START:
             return {
                 ...state,
-                loading: true
+                isLoading: true
             };
         case AUTH_SUCCESS:
             return {
                 ...state,
                 isAuthenticated: true,
-                loading: false,
+                isLoading: false,
             };
         case AUTH_FAIL:
             return {
                 ...state,
                 isAuthenticated: false,
-                loading: false
+                isLoading: false
             };
         case SIGN_OUT:
             return {
                 ...state,
                 isAuthenticated: false,
-                loading: false
+                isLoading: false
             };
         default:
             return state;

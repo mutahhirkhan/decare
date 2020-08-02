@@ -8,8 +8,9 @@ import { useStore } from '../../context/GlobalState';
 
 export const ProfileDetails = () => {
     const [{ user }, dispatch] = useStore();
+
     const [file, setFile] = useState(null);
-    console.logo(user);
+
     const selectFileHandler = e => {
         if (e.target.files[0]) {
             setFile(e.target.files[0]);
@@ -21,7 +22,7 @@ export const ProfileDetails = () => {
             <Container className='justify-content-center'>
                 <Row >
                     <Col md='auto' className='mx-auto mt-5'>
-                        <Image src="https://www.pavilionweb.com/wp-content/uploads/2017/03/man-300x300.png"
+                        <Image src={user.imgUrl ? user.imgUrl : "https://www.pavilionweb.com/wp-content/uploads/2017/03/man-300x300.png"}
                             roundedCircle
                             height='200px' />
                     </Col>
@@ -30,9 +31,9 @@ export const ProfileDetails = () => {
             </Container>
             <Formik
                 initialValues={{
-                    name: '',
-                    organizationName: '',
-                    bio: ''
+                    name: user.name,
+                    organizationName: user.organizationName,
+                    bio: user.bio
                 }}
                 onSubmit={async (data, { setSubmitting }) => {
                     setSubmitting(true);

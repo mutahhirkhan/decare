@@ -6,7 +6,6 @@ import { onAuthStateChanged } from '../firebase/authService';
 import { getUserByEmail } from '../firebase/databaseService';
 
 
-
 export const setupApp = async (dispatch) => {
     //setup metamask
     const isEnabled = await enable();
@@ -19,7 +18,11 @@ export const setupApp = async (dispatch) => {
         if (user) {
             //fetch user info
             const userInfo = await getUserByEmail(user.email);
+
+            //set the state
             dispatch(setUserDetails(userInfo));
+
+            //dispatch successfull sign in
             dispatch(authSuccess());
         }
         else {
