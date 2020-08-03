@@ -1,16 +1,14 @@
-
 .Title {
     color: #1462ff;
-    font-size: 4rem;
     text-align: left;
     margin: 0px;
     font-weight: bold;
 }
 
-.DescriptionContainer {
-    padding: 20px;
-    flex: 60%;
-    margin-top: auto;
+.Amount {
+    font-weight: bold;
+    font-size: 22px;
+    margin-bottom: 10px;
 }
 
 .Description {
@@ -45,6 +43,6 @@
     margin-left: 5px;
 }
 
-.Dates{
+.Dates {
     display: flex;
 }

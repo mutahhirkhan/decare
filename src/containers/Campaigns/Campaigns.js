@@ -30,7 +30,7 @@ export const Campaigns = () => {
     }, []);
 
     return (
-        <Container>
+        <Container style={{ maxWidth: '1300px' }}>
             <Row>
                 <Col>
                     <h1 className='text-center my-4' style={{ fontWeight: 'bold' }}>Campaigns</h1>
@@ -39,8 +39,8 @@ export const Campaigns = () => {
             {
                 count != campaigns?.length &&
                 <Row className='align-items-center justify-content-center my-3'>
-                    <Col md='auto'>
-                        <Spinner className='text-center' animation="border" variant="primary" role="status" />
+                    <Col xs='auto'>
+                        <Spinner className='text-center' animation="grow" variant="primary" role="status" />
                     </Col>
                 </Row>
             }
