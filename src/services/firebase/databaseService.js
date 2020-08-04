@@ -9,13 +9,18 @@ const read = async (path) => {
 }
 
 //-------------------------------PUBLIC METHODS---------------------------------
-export const addUser = async (address, user) => {
+export const setUser = async (address, user) => {
     await write(`users/${address}`, user);
 }
 
+export const addUserCampaign = async (address, campaign) => {
+    const key = await database.ref(`users/${address}/campaigns`).push(campaign).key;
+    return key;
+}
 
 export const getUserByAddress = async (address) => {
-    return read(`users/${address}`);
+    const user = await read(`users/${address}`);
+    return user;
 }
 
 export const getUserByEmail = async (email) => {

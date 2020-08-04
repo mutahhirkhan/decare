@@ -1,7 +1,6 @@
 import React from 'react'
 import { Campaign } from '../Campaign/Campaign';
 import { Container, Col, Row } from 'react-bootstrap';
-import { v4 as guid } from 'uuid';
 
 export const CampaignList = ({ campaigns }) => {
 
@@ -11,7 +10,7 @@ export const CampaignList = ({ campaigns }) => {
                 {
                     campaigns.map(c =>
                         <Col sm='auto' lg='4' md='6'>
-                            <Campaign key={guid()} campaign={c} />
+                            <Campaign key={c.address} campaign={c} />
                         </Col>
                     )
                 }

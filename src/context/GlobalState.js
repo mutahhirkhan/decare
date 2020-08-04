@@ -3,7 +3,6 @@ import { appReducer } from '../store/reducers/appReducer';
 
 let initialState = {
     alertList: [],
-    campaigns: [],
     auth: {
         isAuthenticated: true,
         isLoading: false

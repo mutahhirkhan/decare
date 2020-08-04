@@ -1,23 +1,35 @@
-import { ADD_CAMPAIGN } from './actionTypes';
 import * as ethService from '../../services/ethereum/ethService';
-import { showError, showMessage, showSuccess, showWarning } from './alertAction';
+import * as dbService from '../../services/firebase/databaseService';
+import { showError, showSuccess } from './alertAction';
+import { setUserDetails } from '../../store/actions/userActions';
 
-export const addCampaign = (campaign) => {
-    return {
-        type: ADD_CAMPAIGN,
-        payload: campaign
-    }
-}
-
-export const createCampaign = async (campaign, dispatch) => {
+export const createCampaign = async (campaign, user, dispatch) => {
     try {
         //call campaign factory to create a new campaign contract
-        let address = await ethService
+        const rawAddress = await ethService
             .createCampaign(campaign.title, campaign.description, campaign.amount, campaign.createTimestamp, campaign.closeTimestamp);
+        const address = ethService.toChecksumAddress(rawAddress);
 
-        //update the state
-        dispatch(addCampaign(campaign));
+        //save to firebase
+        const key = await dbService.addUserCampaign(user.address, address);
+
+        //add campaign to user
+        const updatedUser =
+        {
+            ...user,
+            campaigns:
+            {
+                ...user.campaigns, [key]: address
+            }
+        }
+        
+        //update user object at state level
+        dispatch(setUserDetails(updatedUser));
+
+        //show success message
         dispatch(showSuccess('Campaign Added Successfuly'));
+
+        //return the new campaign address to navigate to it
         return address;
     }
     catch (e) {

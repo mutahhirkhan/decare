@@ -8,7 +8,7 @@ import { LoadingButton } from '../LoadingButton/LoadingButton';
 
 export const CreateCampaignForm = () => {
 
-    const dispatch = useStore()[1];
+    const [{ user }, dispatch] = useStore();
     const routeHistory = useHistory();
 
     return (
@@ -19,13 +19,12 @@ export const CreateCampaignForm = () => {
                     title: '',
                     description: '',
                     amount: 0,
-                    startDate: '',
-                    endDate: '',
+                    startDate: `${new Date().getFullYear()}-${new Date().getMonth()}-${new Date().getDay()}`,
+                    endDate: `${new Date().getFullYear()}-${new Date().getMonth()}-${new Date().getDay()}`,
                 }}
 
                 onSubmit={async (data, { setSubmitting }) => {
                     setSubmitting(true);
-
                     let campaign = {
                         title: data.title,
                         description: data.description,
@@ -35,10 +34,10 @@ export const CreateCampaignForm = () => {
                     };
 
                     // deploy contract
-                    let wasSuccess = await createCampaign(campaign, dispatch);
+                    const address = await createCampaign(campaign, user, dispatch);
 
-                    if (wasSuccess) {
-                        routeHistory.push('/my_campaigns');
+                    if (address) {
+                        routeHistory.push(`/campaign${address}`);
                     }
                     setSubmitting(false);
 

@@ -1,7 +1,8 @@
 import { AUTH_START, AUTH_SUCCESS, AUTH_FAIL, SIGN_OUT } from '../actions/actionTypes';
 import { showError } from '../actions/alertAction';
-import * as authService from '../../services/firebase/authService'
-import * as dbService from '../../services/firebase/databaseService'
+import * as authService from '../../services/firebase/authService';
+import * as dbService from '../../services/firebase/databaseService';
+import * as ethService from '../../services/ethereum/ethService';
 import { setUserDetails } from './userActions';
 
 export const authStarted = () => {
@@ -29,12 +30,13 @@ export const signOut = () => {
     };
 }
 
-export const authenticateAsync = async (address, email, password, isSignup, dispatch) => {
+export const authenticateAsync = async (_address, email, password, isSignup, dispatch) => {
+    const address = ethService.toChecksumAddress(_address);
     try {
         dispatch(authStarted());
         if (isSignup) {
             await authService.signUpUser(email, password);
-            await dbService.addUser(address, {
+            await dbService.setUser(address, {
                 name: '',
                 email: email,
                 organizationName: '',

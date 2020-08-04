@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Col, Row, Badge } from 'react-bootstrap'
+import { Badge } from 'react-bootstrap';
 
 
 export const Transaction = ({ transaction }) => {
@@ -10,25 +10,16 @@ export const Transaction = ({ transaction }) => {
                 {transaction.username}
             </td>
 
-            {/* Transaction Hash */}
+            {/* Address */}
             <td>
-                {transaction.txHash}
-            </td>
-
-            {/* Created Date */}
-            <td>
-                {transaction.createdDate}
+                {transaction.personAddress}
             </td>
 
             {/* Amount */}
             <td>
-                {transaction.amount}
+                <Badge variant="success">{transaction.amount}</Badge>
             </td>
 
-            {/* Status */}
-            <td>
-                <Badge variant={transaction.status == 'Success' ? 'success' : 'danger'}>{transaction.status}</Badge>
-            </td>
         </tr>
     );
 }

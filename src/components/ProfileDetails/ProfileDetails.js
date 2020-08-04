@@ -3,7 +3,7 @@ import { Form, Col, Row, Container, Image } from 'react-bootstrap';
 import { Formik, Field } from "formik";
 import { uploadProfilePic, deleteProfilePic } from '../../services/firebase/storageService';
 import { LoadingButton } from '../LoadingButton/LoadingButton';
-import { addUser, getUserByAddress, getUserByEmail } from '../../services/firebase/databaseService';
+import { setUser, getUserByEmail } from '../../services/firebase/databaseService';
 import { useStore } from '../../context/GlobalState';
 import { setUserDetails } from '../../store/actions/userActions';
 
@@ -53,7 +53,7 @@ export const ProfileDetails = () => {
                         imgUrl = await uploadProfilePic(file, user.address);
                     }
                     //addUser can also update user because it just overrides the data
-                    await addUser(user.address,
+                    await setUser(user.address,
                         {
                             ...user,
                             name: data.name,

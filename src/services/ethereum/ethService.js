@@ -3,6 +3,7 @@ import { abi as CAMPAIGN_ABI } from '../../contract/Campaign.json';
 import { abi as CAMPAIGN_FACTORY_ABI } from '../../contract/CampaignFactory.json';
 import { LOCAL_CAMAPAIGN_FACTORY_ADDRESS, ROPSTEN_CAMAPAIGN_FACTORY_ADDRESS } from '../../contract/CAMPAIGN_FACTORY_ADDRESS';
 import { setCurrentAccount } from '../../store/actions/appStateActions';
+import { getUserByAddress } from '../firebase/databaseService';
 
 // var provider = 'http://127.0.0.1:7545';
 var Contract = require('web3-eth-contract');
@@ -16,6 +17,10 @@ let currentAccount;
 
 //web3 singleton
 let web3 = new Web3(Web3.givenProvider);
+
+export const toChecksumAddress = (address) => {
+    return web3.utils.toChecksumAddress(address);
+}
 
 //listen for metamask account change
 export const listenAccountChange = (dispatch) => {
@@ -45,7 +50,7 @@ const getCurrrentAccount = async () => {
 }
 
 export const createCampaign = async (title, description, amount, createTimestamp, closeTimestamp) => {
-    return factory.methods.createCampaign(
+    await factory.methods.createCampaign(
         currentAccount,
         title,
         description,
@@ -53,6 +58,8 @@ export const createCampaign = async (title, description, amount, createTimestamp
         createTimestamp,
         closeTimestamp
     ).send({ from: currentAccount });
+    const address = await factory.methods.getLastDeployedContract().call();
+    return address;
 }
 
 export const getCampaign = async (address) => {
@@ -71,7 +78,8 @@ export const getCampaign = async (address) => {
         closedAt: new Date(summary[9] * 1000),
         donorsCount: summary[10],
         fundRequestsCount: summary[11],
-        address: address
+        isActive: summary[12],
+        address: address,
     }
 }
 
@@ -82,10 +90,10 @@ export const getCampaignsCount = async () => {
 
 export const getAllCampaigns = async (callback) => {
     let count = await factory.methods.getCampaignsCount().call();
+    const campaignAddresses = await factory.methods.getDeployedCampaigns().call();
     let campaigns = [];
     for (let i = 0; i < count; i++) {
-        let address = await factory.methods.deployedCampaigns(i).call();
-        let campaign = await getCampaign(address);
+        let campaign = await getCampaign(campaignAddresses[i]);
         if (callback) {
             callback(campaign);
         }
@@ -108,11 +116,14 @@ export const withdrawDonation = async (address) => {
 export const getDonorsList = async (address, startIndex, endIndex, callback) => {
     let campaign = new Contract(CAMPAIGN_ABI, address);
     let donors = [];
-    for (let i = startIndex; i <= endIndex; i++) {
+    for (let i = startIndex; i < endIndex; i++) {
         let donor = await campaign.methods.donorsList(i).call();
+        const user = await getUserByAddress(donor.personAddress);
+        donor.username = user.name;
         callback(donor);
         donors.push(donor);
     }
+    return donors;
 }
 
 export const createFundRequest = async (address, description, amount, recipients) => {
@@ -125,7 +136,7 @@ export const createFundRequest = async (address, description, amount, recipients
 export const getFundRequests = async (address, startIndex, endIndex, callback) => {
     let campaign = new Contract(CAMPAIGN_ABI, address);
     let requests = [];
-    for (let i = startIndex; i <= endIndex; i++) {
+    for (let i = startIndex; i < endIndex; i++) {
         let request = await campaign.methods.fundRequests(i).call();
         request.index = i;
         callback(request);
@@ -147,4 +158,9 @@ export const disapproveFundRequest = async (address, fundRequestIndex) => {
 export const processFundRequest = async (address, fundRequestIndex) => {
     let campaign = new Contract(CAMPAIGN_ABI, address);
     await campaign.methods.processFundRequest(fundRequestIndex).send({ from: currentAccount });
+}
+
+export const deactivate = (address) => {
+    let campaign = new Contract(CAMPAIGN_ABI, address);
+    campaign.methods.deactivate().call();
 }
