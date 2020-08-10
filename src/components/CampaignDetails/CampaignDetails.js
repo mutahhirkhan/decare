@@ -7,7 +7,7 @@ import { donate } from '../../services/ethereum/ethService';
 import { useStore } from '../../context/GlobalState';
 import { showError, showSuccess } from '../../store/actions/alertAction';
 
-export const CampaignDetails = ({ campaign, style }) => {
+export const CampaignDetails = ({ campaign, style, loadCampaignDetails }) => {
     const [amount, setAmount] = useState(0);
     const [isAmountValid, setIsAmountValid] = useState(true);
     const [amountError, setAmountError] = useState('');
@@ -47,6 +47,8 @@ export const CampaignDetails = ({ campaign, style }) => {
 
             //show confirm message
             dispatch(showSuccess(`Thank you for donating ${amount} ETH.`));
+
+            loadCampaignDetails();
         }
         catch (e) {
             dispatch(showError(e.message));

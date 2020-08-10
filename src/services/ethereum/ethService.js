@@ -126,19 +126,35 @@ export const getDonorsList = async (address, startIndex, endIndex, callback) => 
     return donors;
 }
 
-export const createFundRequest = async (address, description, amount, recipients) => {
+export const createFundRequest = async (address, description, amount, recipientAddresses, recipientAmount) => {
     let campaign = new Contract(CAMPAIGN_ABI, address);
-    let recipientAddresses = Object.keys(recipients);
-    let recipientAmount = Object.values(recipients);
     await campaign.methods.createFundRequest(description, amount, recipientAddresses, recipientAmount).send({ from: currentAccount });
 }
 
+export const getSingleFundRequest = async (address, index) => {
+    const campaign = new Contract(CAMPAIGN_ABI, address);
+    const req = await campaign.methods.getFundRequest(index).call();
+    const request = {
+        description: req[0],
+        amount: req[1],
+        recipientsCount: req[2],
+        disapproversCount: req[3],
+        createdAt: new Date(req[4] * 1000),
+        isCompleted: req[5],
+        isDisapprover: req[6],
+        recipients: req[7].map((x, i) => {
+            return { address: x, amount: req[8][i] };
+        }),
+        index: index,
+    }
+    return request;
+}
+
 export const getFundRequests = async (address, startIndex, endIndex, callback) => {
-    let campaign = new Contract(CAMPAIGN_ABI, address);
+    const campaign = new Contract(CAMPAIGN_ABI, address);
     let requests = [];
     for (let i = startIndex; i < endIndex; i++) {
-        let request = await campaign.methods.fundRequests(i).call();
-        request.index = i;
+        const request = await getSingleFundRequest(address,i);
         callback(request);
         requests.push(request);
     }
@@ -152,7 +168,7 @@ export const approveFundRequest = async (address, fundRequestIndex) => {
 
 export const disapproveFundRequest = async (address, fundRequestIndex) => {
     let campaign = new Contract(CAMPAIGN_ABI, address);
-    await campaign.methods.approveFundRequest(fundRequestIndex).send({ from: currentAccount });
+    await campaign.methods.disapproveFundRequest(fundRequestIndex).send({ from: currentAccount });
 }
 
 export const processFundRequest = async (address, fundRequestIndex) => {
