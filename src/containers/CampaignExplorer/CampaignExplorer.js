@@ -15,6 +15,9 @@ export const CampaignExplorer = props => {
     const [donations, setDonations] = useState([]);
     const [fundRequests, setFundRequests] = useState([]);
 
+    const [loadingFundRequest, setLoadingFundRequest] = useState(false);
+    const [loadingDonations, setLoadingDonations] = useState(false);
+
     const [loadingCampaign, setLoadingCampaign] = useState(true);
 
     const loadCampaignDetails = async () => {
@@ -35,6 +38,7 @@ export const CampaignExplorer = props => {
     const loadDonations = async () => {
         if (!campaign)
             return;
+        setLoadingDonations(true);
         try {
             setDonations([]);
             await ethService.getDonorsList(campaign.address, 1, campaign.donorsCount, d => {
@@ -46,11 +50,13 @@ export const CampaignExplorer = props => {
         catch (e) {
             dispatch(showError(e.message));
         }
+        setLoadingDonations(false);
     }
 
     const loadFundRequests = async () => {
         if (!campaign)
             return;
+        setLoadingFundRequest(true);
         try {
             setFundRequests([]);
             await ethService.getFundRequests(campaign.address, 0, campaign.fundRequestsCount, r => {
@@ -62,6 +68,7 @@ export const CampaignExplorer = props => {
         catch (e) {
             dispatch(showError(e.message));
         }
+        setLoadingFundRequest(false);
     }
 
     const createRequest = async (description, amount, addresses, amounts) => {
@@ -109,25 +116,24 @@ export const CampaignExplorer = props => {
                         {/* Donations */}
                         <Tab eventKey="donations" title='Donations' style={{ marginTop: '10px' }}>
                             {
-                                !donations ? <div>No Donations found....!</div>
-                                    : donations.length > 0 ?
-                                        <TransactionList style={{ boxShadow: '0 10px 10px rgba(0, 0, 0, 0.2)' }} transactions={donations} />
-                                        : <Spinner className='text-center' animation="grow" variant="primary" role="status" />
+                                loadingDonations ? <Spinner className='text-center' animation="grow" variant="primary" role="status" />
+                                    : donations.length === 0 ?
+                                        <div>No Donations found....!</div>
+                                        : <TransactionList style={{ boxShadow: '0 10px 10px rgba(0, 0, 0, 0.2)' }} transactions={donations} />
                             }
                         </Tab>
 
                         {/* Fund Requests */}
-                        <Tab eventKey='requests' title='Fund Requests' style={{marginTop: '10px'}}>
+                        <Tab eventKey='requests' title='Fund Requests' style={{ marginTop: '10px' }}>
                             {
-                                !fundRequests ? <div>No Fund Request found...!</div>
-                                    : fundRequests.length > 0 ?
-                                        <FundRequestsList
+                                loadingFundRequest ? <Spinner className='text-center' animation="grow" variant="primary" role="status" />
+                                    : fundRequests.length === 0 ? <div>No Fund Request found...!</div>
+                                        : <FundRequestsList
                                             requests={fundRequests}
                                             address={campaign.address}
                                             loadCampaignDetails={loadCampaignDetails}
                                             donorsCount={campaign.donorsCount}
                                             isManager={user.address == campaign?.manager} />
-                                        : <Spinner className='text-center' animation="grow" variant="primary" role="status" />
                             }
                         </Tab>
 

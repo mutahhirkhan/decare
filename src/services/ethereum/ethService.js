@@ -154,7 +154,7 @@ export const getFundRequests = async (address, startIndex, endIndex, callback) =
     const campaign = new Contract(CAMPAIGN_ABI, address);
     let requests = [];
     for (let i = startIndex; i < endIndex; i++) {
-        const request = await getSingleFundRequest(address,i);
+        const request = await getSingleFundRequest(address, i);
         callback(request);
         requests.push(request);
     }
@@ -174,6 +174,12 @@ export const disapproveFundRequest = async (address, fundRequestIndex) => {
 export const processFundRequest = async (address, fundRequestIndex) => {
     let campaign = new Contract(CAMPAIGN_ABI, address);
     await campaign.methods.processFundRequest(fundRequestIndex).send({ from: currentAccount });
+}
+
+export const getFundRequestProcessTime = async (address) => {
+    let campaign = new Contract(CAMPAIGN_ABI, address);
+    const time = await campaign.methods.fundRequestProcessTime().call();
+    return time;
 }
 
 export const deactivate = (address) => {

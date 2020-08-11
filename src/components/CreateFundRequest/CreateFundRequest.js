@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 import { Formik, Field } from 'formik';
 import { Container, Form, Col, Row, InputGroup, Alert, Button } from 'react-bootstrap';
 import { LoadingButton } from '../LoadingButton/LoadingButton';
+import { v4 as guid } from 'uuid';
+import { FaTimes } from 'react-icons/fa';
 
 export const CreateFundRequest = ({ createRequest, loadCampaignDetails }) => {
     const [request, setRequest] = useState({
@@ -16,10 +18,21 @@ export const CreateFundRequest = ({ createRequest, loadCampaignDetails }) => {
                 ...prevData,
                 recipients: [
                     ...prevData.recipients,
-                    { address: '', amount: '' }
+                    { key: guid(), address: '', amount: '' }
                 ]
             }
-        })
+        });
+    }
+
+    const deleteRecipient = (key) => {
+        setRequest(prevData => {
+            return {
+                ...prevData,
+                recipients: [
+                    ...prevData.recipients.filter(i => i.key !== key),
+                ]
+            }
+        });
     }
 
     return (
@@ -124,7 +137,7 @@ export const CreateFundRequest = ({ createRequest, loadCampaignDetails }) => {
                                             </Col>
 
                                             {/* Amount */}
-                                            <Col md='4'>
+                                            <Col md='3'>
                                                 <Form.Group>
                                                     <Form.Label>Amount Delegated</Form.Label>
                                                     <Field as={Form.Control} type="text" name={`recipients.${index}.amount`}
@@ -132,6 +145,11 @@ export const CreateFundRequest = ({ createRequest, loadCampaignDetails }) => {
                                                     />
                                                     <Form.Control.Feedback type='invalid'></Form.Control.Feedback>
                                                 </Form.Group>
+                                            </Col>
+
+                                            {/* Delete Button */}
+                                            <Col md='1' className='align-self-end' style={{marginBottom: '16px'}}>
+                                                <Button  variant='danger' onClick={() => deleteRecipient(r.key)}><FaTimes /> </Button>
                                             </Col>
 
                                         </Form.Row>
