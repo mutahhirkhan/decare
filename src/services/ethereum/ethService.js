@@ -62,9 +62,15 @@ export const createCampaign = async (title, description, amount, createTimestamp
     return address;
 }
 
-export const getCampaign = async (address) => {
-    let campaign = new Contract(CAMPAIGN_ABI, address);
-    let summary = await campaign.methods.getSummary().call();
+export const getCampaign = async (campaignAddress, userAddress) => {
+    const campaign = new Contract(CAMPAIGN_ABI, campaignAddress);
+    const summary = await campaign.methods.getSummary().call();
+    const donorsCount = await campaign.methods.dononrsCount().call();
+    let isDonor = false;
+    if (userAddress) {
+        isDonor = await campaign.methods.donors(userAddress).call() != 0;
+
+    }
     return {
         manager: summary[0],
         title: summary[1],
@@ -76,10 +82,12 @@ export const getCampaign = async (address) => {
         fundRequestProcessTime: summary[7],
         createdAt: new Date(summary[8] * 1000),
         closedAt: new Date(summary[9] * 1000),
-        donorsCount: summary[10],
+        donorsListLength: summary[10],
         fundRequestsCount: summary[11],
         isActive: summary[12],
-        address: address,
+        address: campaignAddress,
+        donorsCount: donorsCount,
+        isDonor: isDonor
     }
 }
 
@@ -104,7 +112,8 @@ export const getAllCampaigns = async (callback) => {
 
 export const donate = async (address, amount) => {
     let campaign = new Contract(CAMPAIGN_ABI, address);
-    await campaign.methods.donate().send({ from: currentAccount, value: amount });
+    const tx = await campaign.methods.donate().send({ from: currentAccount, value: amount });
+    return tx;
 }
 
 export const withdrawDonation = async (address) => {
@@ -118,10 +127,12 @@ export const getDonorsList = async (address, startIndex, endIndex, callback) => 
     let donors = [];
     for (let i = startIndex; i < endIndex; i++) {
         let donor = await campaign.methods.donorsList(i).call();
-        const user = await getUserByAddress(donor.personAddress);
-        donor.username = user.name;
-        callback(donor);
-        donors.push(donor);
+        if (donor.amount != 0) {
+            const user = await getUserByAddress(donor.personAddress);
+            donor.username = user.name;
+            callback(donor);
+            donors.push(donor);
+        }
     }
     return donors;
 }

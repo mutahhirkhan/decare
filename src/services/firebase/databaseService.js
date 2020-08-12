@@ -27,3 +27,27 @@ export const getUserByEmail = async (email) => {
     const user = (await database.ref('users').orderByChild('email').equalTo(email).once('value')).val();
     return user[[Object.keys(user)[0]]];
 }
+
+export const addDonation = async (campaignAddress, userAddress, txHash, amount) => {
+    await database.ref(`donations/${campaignAddress}/${userAddress}/`).child(txHash).set(amount);
+}
+
+export const deleteDonation = async (campaignAddress, userAddress) => {
+    await database.ref(`donations/${campaignAddress}/${userAddress}/`).remove();
+}
+
+export const getDonations = async () => {
+    return await read('donations');
+}
+
+export const getTransaction = async (campaignAddress, userAddress) => {
+    return await read(`donations/${campaignAddress}/${userAddress}`);
+}
+
+// const donations = {
+//     ['campaign address']: {
+//         ['user address']: {
+//             ['transaction hash']: 'amount'
+//         }
+//     }
+// }

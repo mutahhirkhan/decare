@@ -4,10 +4,9 @@ import * as ethService from '../../services/ethereum/ethService';
 import { showError } from '../../store/actions/alertAction';
 import { useStore } from '../../context/GlobalState';
 import { FaPlus, FaMinus, FaChevronCircleRight } from 'react-icons/fa';
-import { Button, Row, Col } from 'react-bootstrap';
+import { Button, Row, Col, Badge } from 'react-bootstrap';
 
 export const FundRequest = ({ data, isManager, address, loadCampaignDetails, donorsCount }) => {
-    console.log('donorsCount', donorsCount);
     const [_, dispatch] = useStore();
     const [showDetails, setshowDetails] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
@@ -45,12 +44,12 @@ export const FundRequest = ({ data, isManager, address, loadCampaignDetails, don
     return (
         <React.Fragment>
             <tr>
-                <td><Button onClick={() => setshowDetails(!showDetails)}> {showDetails ? <FaMinus /> : <FaPlus />} </Button></td>
+                <td><Button size='sm' onClick={() => setshowDetails(!showDetails)}> {showDetails ? <FaMinus /> : <FaPlus />} </Button></td>
                 <td>{data.description}</td>
                 <td>{data.amount}</td>
                 <td>{data.recipientsCount}</td>
-                <td>{donorsCount - data.disapproversCount}</td>
-                <td>{data.disapproversCount}</td>
+                <td><Badge variant='success'>{donorsCount - data.disapproversCount}</Badge></td>
+                <td><Badge variant='danger'>{data.disapproversCount}</Badge></td>
                 <td>{data.createdAt.toDateString()}</td>
                 <td>{data.isCompleted ? 'Completed' : 'In progress'}</td>
                 {

@@ -7,6 +7,7 @@ export const TransactionList = ({ transactions, style }) => {
         <Table responsive hover striped bordered style={style}>
             <thead>
                 <tr>
+                    <th></th>
                     <th>Username</th>
                     <th>Address</th>
                     <th>Amount</th>

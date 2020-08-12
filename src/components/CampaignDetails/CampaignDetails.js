@@ -3,7 +3,8 @@ import classes from './CampaignDetails.module.css'
 import { FaCalendarAlt, FaUsers, FaExclamationCircle } from 'react-icons/fa';
 import { Card, Col, Row, Badge, Form, InputGroup, Alert } from 'react-bootstrap';
 import { LoadingButton } from '../LoadingButton/LoadingButton';
-import { donate } from '../../services/ethereum/ethService';
+import * as ethService from '../../services/ethereum/ethService';
+import * as dbService from '../../services/firebase/databaseService';
 import { useStore } from '../../context/GlobalState';
 import { showError, showSuccess } from '../../store/actions/alertAction';
 
@@ -12,8 +13,9 @@ export const CampaignDetails = ({ campaign, style, loadCampaignDetails }) => {
     const [isAmountValid, setIsAmountValid] = useState(true);
     const [amountError, setAmountError] = useState('');
     const [isDonating, setIsDonating] = useState(false);
+    const [isWithdrawingDonation, setIsWithdrawingDonation] = useState(false);
 
-    const [_, dispatch] = useStore();
+    const [{ user }, dispatch] = useStore();
 
     const amountChanged = (value) => {
         setAmount(value);
@@ -43,7 +45,10 @@ export const CampaignDetails = ({ campaign, style, loadCampaignDetails }) => {
 
         try {
             //do the transaction
-            await donate(campaign.address, amount);
+            const tx = await ethService.donate(campaign.address, amount);
+
+            //save transaction hash on db
+            await dbService.addDonation(campaign.address, user.address, tx.transactionHash, amount);
 
             //show confirm message
             dispatch(showSuccess(`Thank you for donating ${amount} ETH.`));
@@ -55,6 +60,22 @@ export const CampaignDetails = ({ campaign, style, loadCampaignDetails }) => {
         }
         setAmount(0);
         setIsDonating(false);
+    }
+
+    const withdrawDonation = async () => {
+        setIsWithdrawingDonation(true);
+        try {
+            //with draw
+            await ethService.withdrawDonation(campaign.address);
+
+            //remove donation from db
+            await dbService.deleteDonation(campaign.address, user.address);
+        }
+        catch (e) {
+            dispatch(showError(e.message));
+            loadCampaignDetails();
+        }
+        setIsWithdrawingDonation(false);
     }
 
     return (
@@ -137,9 +158,15 @@ export const CampaignDetails = ({ campaign, style, loadCampaignDetails }) => {
                             }
 
                         </Form>
-
+                        {
+                            campaign.isDonor &&
+                            <Row className='justify-content-end'>
+                                <Col md={{ span: 6, offset: 6 }}><LoadingButton variant='danger' isloading={isWithdrawingDonation} onClick={withdrawDonation}>Withdraw Donation</LoadingButton></Col>
+                            </Row>
+                        }
                     </Col>
                 </Row>
+
             </Card.Body>
 
         </Card>

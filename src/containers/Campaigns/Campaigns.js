@@ -9,10 +9,10 @@ export const Campaigns = () => {
     const [count, setCount] = useState(0);
 
     const loadCampaigns = useCallback(async () => {
+
         //get campaign count
         let newCount = await ethService.getCampaignsCount();
         setCount(newCount);
-
         //load all campaigns
         ethService.getAllCampaigns(campaign => {
 
@@ -46,7 +46,9 @@ export const Campaigns = () => {
             }
             <Row>
                 <Col>
-                    <CampaignList campaigns={campaigns} />
+                    {campaigns?.length === 0 ? <div>No Campaigns found...!</div>
+                        : <CampaignList campaigns={campaigns} />
+                    }
                 </Col>
             </Row>
         </Container>

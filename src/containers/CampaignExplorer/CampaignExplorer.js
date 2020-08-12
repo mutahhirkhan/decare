@@ -4,6 +4,7 @@ import { FundRequestsList } from '../../components/FundRequestsList/FundRequests
 import { TransactionList } from '../../components/TransactionList/TransactionList';
 import { Container, Spinner, Row, Col, Tabs, Tab, Card } from 'react-bootstrap';
 import * as ethService from '../../services/ethereum/ethService';
+import * as dbService from '../../services/firebase/databaseService';
 import { showError } from '../../store/actions/alertAction';
 import { useStore } from '../../context/GlobalState';
 import { CreateFundRequest } from '../../components/CreateFundRequest/CreateFundRequest';
@@ -25,7 +26,7 @@ export const CampaignExplorer = props => {
 
         try {
             //load campaign data from blockchain
-            let c = await ethService.getCampaign(props.match.params.address);
+            let c = await ethService.getCampaign(props.match.params.address, user.address);
             setCampaign(c);
         }
         catch (e) {
@@ -41,7 +42,11 @@ export const CampaignExplorer = props => {
         setLoadingDonations(true);
         try {
             setDonations([]);
-            await ethService.getDonorsList(campaign.address, 1, campaign.donorsCount, d => {
+            await ethService.getDonorsList(campaign.address, 1, campaign.donorsListLength, async (d) => {
+                const tx = await dbService.getTransaction(campaign.address, d.personAddress);
+                d.transactions = Object.keys(tx).map(t => {
+                    return { txHash: t, amount: tx[t] }
+                })
                 setDonations(currDonations => {
                     return [...currDonations, d]
                 });
