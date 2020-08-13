@@ -2,30 +2,31 @@ import React from 'react';
 import { Table } from 'react-bootstrap';
 import { FaChevronCircleRight } from 'react-icons/fa';
 
-export const TransactionList = ({ transactions }) => {
+export const RecipientList = ({ recipients }) => {
     return (
         <Table style={{ margin: 0 }}>
             <thead>
                 <tr style={{ background: '#0384fc', color: 'white' }}>
                     <th></th>
-                    <th>Transaction Hash</th>
-                    <th>Amount </th>
+                    <th>Recipient Address</th>
+                    <th>Amount Delegated</th>
                 </tr>
             </thead>
             <tbody>
                 {
-                    transactions?.map(tx =>
-                        <tr key={tx.txHash} style={{ background: '#b8dcff' }}>
+                    recipients?.map(r =>
+                        <tr key={r.address} style={{ background: '#b8dcff' }}>
                             <td>
                                 <FaChevronCircleRight />
                             </td>
                             <td >
-                                {/*Transaction Hash */}
-                                <a target='_blank' href={`https://ropsten.etherscan.io/address/${tx.txHash}`}>{tx.txHash}</a>
+                                {/* Recipients Address */}
+                                <a target='_blank' href={`https://ropsten.etherscan.io/address/${r.address}`}>{r.address}</a>
+                                {/* </Col> */}
                             </td>
                             <td>
                                 {/* Amount */}
-                                <b>{tx.amount}</b>
+                                <b>{r.amount}</b>
                             </td>
                         </tr>
                     )

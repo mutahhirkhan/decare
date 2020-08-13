@@ -91,7 +91,8 @@ export const CampaignDetails = ({ campaign, style, loadCampaignDetails }) => {
                         {/* Status */}
                         <Row>
                             <Col lg='auto' className='ml-auto my-3'>
-                                <FaExclamationCircle className='mb-1' /> Status: {campaign.status}
+                                <FaExclamationCircle className='mb-1' /> Status:
+                                <b style={{ color: campaign.status === 'Closed' ? 'red' : campaign.status === 'Goal Reached' ? 'green' : 'yellow' }} > {campaign.status}</b>
                             </Col>
                         </Row>
 

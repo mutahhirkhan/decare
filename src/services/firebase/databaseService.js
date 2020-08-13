@@ -44,6 +44,11 @@ export const getTransaction = async (campaignAddress, userAddress) => {
     return await read(`donations/${campaignAddress}/${userAddress}`);
 }
 
+export const getUserDonations = async (userAddress) => {
+    return (await database.ref('donations').orderByChild(`${userAddress}`).once('value')).val();
+}
+
+//donations structure
 // const donations = {
 //     ['campaign address']: {
 //         ['user address']: {

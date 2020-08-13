@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { CampaignDetails } from '../../components/CampaignDetails/CampaignDetails';
 import { FundRequestsList } from '../../components/FundRequestsList/FundRequestsList';
-import { TransactionList } from '../../components/TransactionList/TransactionList';
+import { DonationList } from '../../components/DonationList/DonationList';
 import { Container, Spinner, Row, Col, Tabs, Tab, Card } from 'react-bootstrap';
 import * as ethService from '../../services/ethereum/ethService';
 import * as dbService from '../../services/firebase/databaseService';
@@ -124,7 +124,7 @@ export const CampaignExplorer = props => {
                                 loadingDonations ? <Spinner className='text-center' animation="grow" variant="primary" role="status" />
                                     : donations.length === 0 ?
                                         <div>No Donations found....!</div>
-                                        : <TransactionList style={{ boxShadow: '0 10px 10px rgba(0, 0, 0, 0.2)' }} transactions={donations} />
+                                        : <DonationList style={{ boxShadow: '0 10px 10px rgba(0, 0, 0, 0.2)' }} donations={donations} />
                             }
                         </Tab>
 
@@ -135,9 +135,8 @@ export const CampaignExplorer = props => {
                                     : fundRequests.length === 0 ? <div>No Fund Request found...!</div>
                                         : <FundRequestsList
                                             requests={fundRequests}
-                                            address={campaign.address}
                                             loadCampaignDetails={loadCampaignDetails}
-                                            donorsCount={campaign.donorsCount}
+                                            campaign={campaign}
                                             isManager={user.address == campaign?.manager} />
                             }
                         </Tab>
@@ -146,7 +145,7 @@ export const CampaignExplorer = props => {
                         {
                             user.address == campaign?.manager &&
                             < Tab eventKey='createRequests' title='Create Fund Requests' style={{ marginTop: '10px' }}>
-                                <CreateFundRequest loadCampaignDetails={loadCampaignDetails} createRequest={createRequest} />
+                                <CreateFundRequest campaign={campaign} loadCampaignDetails={loadCampaignDetails} createRequest={createRequest} />
                             </Tab>
                         }
                     </Tabs>

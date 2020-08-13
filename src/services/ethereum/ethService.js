@@ -71,7 +71,7 @@ export const getCampaign = async (campaignAddress, userAddress) => {
         isDonor = await campaign.methods.donors(userAddress).call() != 0;
 
     }
-    return {
+    let campaignSummary = {
         manager: summary[0],
         title: summary[1],
         description: summary[2],
@@ -87,8 +87,18 @@ export const getCampaign = async (campaignAddress, userAddress) => {
         isActive: summary[12],
         address: campaignAddress,
         donorsCount: donorsCount,
-        isDonor: isDonor
+        isDonor: isDonor,
     }
+    if (campaignSummary.isActive) {
+        if (campaignSummary.amountInitialGoal > campaignSummary.amountCollected)
+            campaignSummary.status = 'Goal Pending';
+        else
+            campaignSummary.status = 'Goal Reached';
+    }
+    else {
+        campaignSummary.status = 'Closed';
+    }
+    return campaignSummary;
 }
 
 export const getCampaignsCount = async () => {
@@ -142,6 +152,11 @@ export const createFundRequest = async (address, description, amount, recipientA
     await campaign.methods.createFundRequest(description, amount, recipientAddresses, recipientAmount).send({ from: currentAccount });
 }
 
+export const closeFundRequest = async (address, index) => {
+    let campaign = new Contract(CAMPAIGN_ABI, address);
+    await campaign.methods.closeFundRequest(index).send({ from: currentAccount });
+}
+
 export const getSingleFundRequest = async (address, index) => {
     const campaign = new Contract(CAMPAIGN_ABI, address);
     const req = await campaign.methods.getFundRequest(index).call();
@@ -156,6 +171,7 @@ export const getSingleFundRequest = async (address, index) => {
         recipients: req[7].map((x, i) => {
             return { address: x, amount: req[8][i] };
         }),
+        isClosed: req[9],
         index: index,
     }
     return request;
