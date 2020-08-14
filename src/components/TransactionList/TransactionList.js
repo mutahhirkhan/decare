@@ -4,7 +4,7 @@ import { FaChevronCircleRight } from 'react-icons/fa';
 
 export const TransactionList = ({ transactions }) => {
     return (
-        <Table style={{ margin: 0 }}>
+        <Table responsive style={{ margin: 0 }}>
             <thead>
                 <tr style={{ background: '#0384fc', color: 'white' }}>
                     <th></th>
@@ -21,7 +21,7 @@ export const TransactionList = ({ transactions }) => {
                             </td>
                             <td >
                                 {/*Transaction Hash */}
-                                <a target='_blank' href={`https://ropsten.etherscan.io/address/${tx.txHash}`}>{tx.txHash}</a>
+                                <a target='_blank' href={`https://ropsten.etherscan.io/tx/${tx.txHash}`}>{tx.txHash}</a>
                             </td>
                             <td>
                                 {/* Amount */}

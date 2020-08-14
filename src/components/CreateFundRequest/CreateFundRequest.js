@@ -1,12 +1,23 @@
-import React, { useState } from 'react'
+import React, { useEffect } from 'react'
 import { Formik, Field, FieldArray } from 'formik';
 import { Container, Form, Col, Row, InputGroup, Alert, Button } from 'react-bootstrap';
 import { LoadingButton } from '../LoadingButton/LoadingButton';
 import { v4 as guid } from 'uuid';
 import { FaTimes } from 'react-icons/fa';
 import * as yup from 'yup';
+import { useStore } from '../../context/GlobalState';
+import { addTransactionState, setTransactionState } from '../../store/actions/transactionStatesActions';
 
 export const CreateFundRequest = ({ createRequest, loadCampaignDetails, campaign }) => {
+    const fundReqKey = `CREATING_FUND_REQUEST_${campaign.address}`;
+
+    const [{ transactionStates }, dispatch] = useStore();
+    const isCreating = transactionStates[fundReqKey];
+
+    useEffect(() => {
+        dispatch(addTransactionState(fundReqKey));
+    }, [])
+
     //helper method
     const numOr0 = n => isNaN(+n) ? 0 : +n;
 
@@ -34,7 +45,7 @@ export const CreateFundRequest = ({ createRequest, loadCampaignDetails, campaign
     });
 
     return (
-        campaign.status !== 'Goal Reached' ? <div>Campaign must reach its goal before you can create a fund request.</div>
+        campaign.status !== 'Locked' ? <div>Campaign must reach its goal and be Locked before you can create a fund request.</div>
             : <Container>
                 <Formik
                     validationSchema={schema}
@@ -43,14 +54,14 @@ export const CreateFundRequest = ({ createRequest, loadCampaignDetails, campaign
                         amount: 0,
                         recipients: []
                     }}
-                    onSubmit={async (data, { setSubmitting, resetForm }) => {
-                        setSubmitting(true);
+                    onSubmit={async (data, { resetForm }) => {
+                        dispatch(setTransactionState(true, fundReqKey));
 
                         const addresses = data.recipients.map(i => i.address);
                         const amounts = data.recipients.map(i => parseInt(i.amount));
                         await createRequest(data.description, data.amount, addresses, amounts);
 
-                        setSubmitting(false);
+                        dispatch(setTransactionState(false, fundReqKey));
 
                         resetForm();
 
@@ -141,13 +152,13 @@ export const CreateFundRequest = ({ createRequest, loadCampaignDetails, campaign
 
                             <Row className='justify-content-end align-items-end my-4'>
                                 {
-                                    isSubmitting &&
+                                    isCreating &&
                                     <Col>
                                         <Alert style={{ marginBottom: '0' }} variant='warning'>Please wait while transaction is in progress...</Alert>
                                     </Col>
                                 }
                                 <Col md="auto" >
-                                    <LoadingButton isLoading={isSubmitting} type='submit' className='px-5'>
+                                    <LoadingButton isloading={isCreating} type='submit' className='px-5'>
                                         Create
                                 </LoadingButton>
                                 </Col>

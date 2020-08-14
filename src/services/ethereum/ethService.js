@@ -67,18 +67,19 @@ export const getCampaign = async (campaignAddress, userAddress) => {
     const summary = await campaign.methods.getSummary().call();
     const donorsCount = await campaign.methods.dononrsCount().call();
     let isDonor = false;
+
     if (userAddress) {
         isDonor = await campaign.methods.donors(userAddress).call() != 0;
-
     }
+
     let campaignSummary = {
-        manager: summary[0],
+        managerAddress: summary[0],
         title: summary[1],
         description: summary[2],
-        amountInitialGoal: summary[3],
-        amountCollected: summary[4],
-        amountDelegated: summary[5],
-        amountSpended: summary[6],
+        amountInitialGoal: parseInt(summary[3]),
+        amountCollected: parseInt(summary[4]),
+        amountDelegated: parseInt(summary[5]),
+        amountSpended: parseInt(summary[6]),
         fundRequestProcessTime: summary[7],
         createdAt: new Date(summary[8] * 1000),
         closedAt: new Date(summary[9] * 1000),
@@ -90,10 +91,12 @@ export const getCampaign = async (campaignAddress, userAddress) => {
         isDonor: isDonor,
     }
     if (campaignSummary.isActive) {
-        if (campaignSummary.amountInitialGoal > campaignSummary.amountCollected)
-            campaignSummary.status = 'Goal Pending';
-        else
+        if (campaignSummary.amountInitialGoal < campaignSummary.amountCollected && campaignSummary.closedAt.getTime() < new Date().getTime())
+            campaignSummary.status = 'Locked';
+        else if (campaignSummary.amountInitialGoal < campaignSummary.amountCollected)
             campaignSummary.status = 'Goal Reached';
+        else
+            campaignSummary.status = 'Goal Pending';
     }
     else {
         campaignSummary.status = 'Closed';

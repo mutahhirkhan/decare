@@ -21,7 +21,7 @@ export const Donation = ({ donation, onlyTransaction }) => {
 
                     {/* Address */}
                     <td>
-                        {donation.personAddress}
+                        <a target='_blank' href={`https://ropsten.etherscan.io/address/${donation.personAddress}`}>{donation.personAddress}</a>
                     </td>
 
                     {/* Amount */}

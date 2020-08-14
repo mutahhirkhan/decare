@@ -5,7 +5,7 @@ export const signUpUser = async (email, password) => {
 }
 
 export const signInUser = async (email, password) => {
-    return (await auth.signInWithEmailAndPassword(email, password)).user;
+    return (await auth.signInWithEmailAndPassword(email.toLowerCase(), password)).user;
 }
 
 export const signOutUser = () => {

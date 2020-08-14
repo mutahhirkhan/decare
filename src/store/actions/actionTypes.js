@@ -37,3 +37,7 @@ export const DONATION_CLAIMED_FAILED = 'DONATION_CLAIMED_FAILED';
 
 //Alert Actions
 export const ALERT = 'ALERT';
+
+//Transaction States Actions
+export const ADD_TRANSACTION_STATE = 'ADD_TRANSACTION_STATE';
+export const SET_TRANSACTION_STATE = 'SET_TRANSACTION_STATE';

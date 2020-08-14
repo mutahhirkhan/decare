@@ -3,27 +3,34 @@ import { CampaignList } from '../../components/CampaignList/CampaignList';
 import { Container, Spinner, Row, Col } from 'react-bootstrap';
 import * as ethService from '../../services/ethereum/ethService';
 import { useStore } from '../../context/GlobalState';
+import { showError } from '../../store/actions/alertAction';
 
 
 export const MyCampaigns = () => {
-    const [{ user }] = useStore();
+    const [{ user }, dispatch] = useStore();
     const [campaigns, setCampaigns] = useState([]);
     const [count, setCount] = useState(0);
 
     const loadCampaigns = useCallback(async () => {
+        try {
+            if (user.campaigns) {
+                const campaignAddresses = Object.values(user.campaigns);
+                setCount(campaignAddresses.length);
 
-        const campaignAddresses = Object.values(user.campaigns);
-        setCount(campaignAddresses.length);
+                for (let i = 0; i < campaignAddresses.length; i++) {
+                    const address = campaignAddresses[i];
 
-        for (let i = 0; i < campaignAddresses.length; i++) {
-            const address = campaignAddresses[i];
+                    //load campaign
+                    const c = await ethService.getCampaign(address);
 
-            //load campaign
-            const c = await ethService.getCampaign(address);
-
-            setCampaigns(currCampaigs => {
-                return [...currCampaigs, c]
-            });
+                    setCampaigns(currCampaigs => {
+                        return [...currCampaigs, c]
+                    });
+                }
+            }
+        }
+        catch (e) {
+            dispatch(showError(e.message));
         }
 
 

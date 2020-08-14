@@ -27,7 +27,9 @@ export const CampaignExplorer = props => {
         try {
             //load campaign data from blockchain
             let c = await ethService.getCampaign(props.match.params.address, user.address);
+            c.manager = (await dbService.getUserByAddress(c.managerAddress)).name;
             setCampaign(c);
+            console.log(c);
         }
         catch (e) {
             dispatch(showError(e.message));
@@ -137,13 +139,13 @@ export const CampaignExplorer = props => {
                                             requests={fundRequests}
                                             loadCampaignDetails={loadCampaignDetails}
                                             campaign={campaign}
-                                            isManager={user.address == campaign?.manager} />
+                                            isManager={user.address == campaign?.managerAddress} />
                             }
                         </Tab>
 
                         {/* Create Fund Requests */}
                         {
-                            user.address == campaign?.manager &&
+                            user.address == campaign?.managerAddress &&
                             < Tab eventKey='createRequests' title='Create Fund Requests' style={{ marginTop: '10px' }}>
                                 <CreateFundRequest campaign={campaign} loadCampaignDetails={loadCampaignDetails} createRequest={createRequest} />
                             </Tab>

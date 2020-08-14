@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useCallback } from 'react'
 import { FundRequest } from '../FundRequest/FundRequest';
 import { Table } from 'react-bootstrap';
 import { v4 as guid } from 'uuid';
@@ -11,22 +11,27 @@ export const FundRequestsList = ({ requests, isManager, loadCampaignDetails, cam
                     <th></th>
                     <th>Description</th>
                     <th>Amount</th>
-                    <th>No. of Recipeints</th>
+                    <th>Recipeints</th>
                     <th>Approvers</th>
                     <th>Disapprovers</th>
                     <th>Created At</th>
                     <th>Status</th>
                     <th></th>
-                    <th></th>
                 </tr>
             </thead>
-            <tbody>{requests.map(r => <FundRequest
-                key={guid()}
-                data={r}
-                isManager={isManager}
-                campaign={campaign}
-                loadCampaignDetails={loadCampaignDetails}
-            />)}</tbody>
+            <tbody>
+                {
+                    //to cache the function, so it won't rerun everytime the parent component updates
+                    useCallback(
+                        requests.map(r => <FundRequest
+                            key={guid()}
+                            data={r}
+                            isManager={isManager}
+                            campaign={campaign}
+                            loadCampaignDetails={loadCampaignDetails}
+                        />), [])
+                }
+            </tbody>
         </Table>
     );
 }

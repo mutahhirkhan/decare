@@ -1,21 +1,31 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import classes from './CampaignDetails.module.css'
 import { FaCalendarAlt, FaUsers, FaExclamationCircle } from 'react-icons/fa';
 import { Card, Col, Row, Badge, Form, InputGroup, Alert } from 'react-bootstrap';
 import { LoadingButton } from '../LoadingButton/LoadingButton';
 import * as ethService from '../../services/ethereum/ethService';
 import * as dbService from '../../services/firebase/databaseService';
-import { useStore } from '../../context/GlobalState';
 import { showError, showSuccess } from '../../store/actions/alertAction';
+import { useStore } from '../../context/GlobalState';
+import { addTransactionState, setTransactionState } from '../../store/actions/transactionStatesActions';
 
 export const CampaignDetails = ({ campaign, style, loadCampaignDetails }) => {
+
+    const donationKey = `DONATING_${campaign.address}`;
+    const withdrawnKey = `WITHDRAWING_${campaign.address}`;
+
+    const [{ user, transactionStates }, dispatch] = useStore();
+    const isDonating = transactionStates[donationKey];
+    const isWithdrawing = transactionStates[withdrawnKey];
+
     const [amount, setAmount] = useState(0);
     const [isAmountValid, setIsAmountValid] = useState(true);
     const [amountError, setAmountError] = useState('');
-    const [isDonating, setIsDonating] = useState(false);
-    const [isWithdrawingDonation, setIsWithdrawingDonation] = useState(false);
 
-    const [{ user }, dispatch] = useStore();
+    useEffect(() => {
+        dispatch(addTransactionState(donationKey));
+        dispatch(addTransactionState(withdrawnKey));
+    }, [])
 
     const amountChanged = (value) => {
         setAmount(value);
@@ -41,7 +51,7 @@ export const CampaignDetails = ({ campaign, style, loadCampaignDetails }) => {
         if (!amountChanged(amount))
             return;
 
-        setIsDonating(true);
+        dispatch(setTransactionState(true, donationKey));
 
         try {
             //do the transaction
@@ -59,23 +69,24 @@ export const CampaignDetails = ({ campaign, style, loadCampaignDetails }) => {
             dispatch(showError(e.message));
         }
         setAmount(0);
-        setIsDonating(false);
+        dispatch(setTransactionState(false, donationKey));
     }
 
     const withdrawDonation = async () => {
-        setIsWithdrawingDonation(true);
+        dispatch(setTransactionState(true, withdrawnKey));
         try {
             //with draw
             await ethService.withdrawDonation(campaign.address);
 
             //remove donation from db
             await dbService.deleteDonation(campaign.address, user.address);
+
+            loadCampaignDetails();
         }
         catch (e) {
             dispatch(showError(e.message));
-            loadCampaignDetails();
         }
-        setIsWithdrawingDonation(false);
+        dispatch(setTransactionState(false, withdrawnKey));
     }
 
     return (
@@ -92,7 +103,7 @@ export const CampaignDetails = ({ campaign, style, loadCampaignDetails }) => {
                         <Row>
                             <Col lg='auto' className='ml-auto my-3'>
                                 <FaExclamationCircle className='mb-1' /> Status:
-                                <b style={{ color: campaign.status === 'Closed' ? 'red' : campaign.status === 'Goal Reached' ? 'green' : 'yellow' }} > {campaign.status}</b>
+                                <b style={{ color: campaign.status === 'Closed' ? 'red' : campaign.status === 'Goal Pending' ? '#ffcc00' : 'green' }} > {campaign.status}</b>
                             </Col>
                         </Row>
 
@@ -129,9 +140,17 @@ export const CampaignDetails = ({ campaign, style, loadCampaignDetails }) => {
                         {/* Description */}
                         <p className={classes.Description}> {campaign.description} </p>
 
+                        {/* Manager */}
                         <Row className="my-4">
                             <Col>
                                 Manager <FaUsers className='mb-1' />  : {campaign.manager}
+                            </Col>
+                        </Row>
+
+                        {/* Campaign Address */}
+                        <Row className="my-4">
+                            <Col>
+                                Address : <a target='_blank' href={`https://ropsten.etherscan.io/address/${campaign.address}`}>{campaign.address}</a>
                             </Col>
                         </Row>
 
@@ -153,17 +172,17 @@ export const CampaignDetails = ({ campaign, style, loadCampaignDetails }) => {
                                     <LoadingButton isloading={isDonating} type='submit' size="lg">Donate Now!</LoadingButton>
                                 </Col>
                             </Row>
-                            {
-                                isDonating &&
-                                <Alert variant='warning'>Please wait while transaction is in progress...</Alert>
-                            }
 
                         </Form>
                         {
-                            campaign.isDonor &&
+                            (campaign.isDonor && campaign.status !== 'Locked') &&
                             <Row className='justify-content-end'>
-                                <Col md={{ span: 6, offset: 6 }}><LoadingButton variant='danger' isloading={isWithdrawingDonation} onClick={withdrawDonation}>Withdraw Donation</LoadingButton></Col>
+                                <Col md={{ span: 6, offset: 6 }}><LoadingButton variant='danger' isloading={isWithdrawing} onClick={withdrawDonation}>Withdraw Donation</LoadingButton></Col>
                             </Row>
+                        }
+                        {
+                            (isDonating || isWithdrawing) &&
+                            <Alert style={{ marginTop: '10px' }} variant='warning'>Please wait while transaction is in progress...</Alert>
                         }
                     </Col>
                 </Row>

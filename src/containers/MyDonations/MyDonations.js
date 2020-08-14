@@ -4,6 +4,7 @@ import * as dbService from '../../services/firebase/databaseService';
 import * as ethService from '../../services/ethereum/ethService';
 import { showError } from '../../store/actions/alertAction';
 import { useStore } from '../../context/GlobalState';
+import { Link } from 'react-router-dom';
 import { TransactionList } from '../../components/TransactionList/TransactionList';
 
 export const MyDonations = () => {
@@ -21,7 +22,6 @@ export const MyDonations = () => {
         try {
             let d = [];
             const data = await dbService.getDonations();
-            console.log('donations', data);
             for (const i in data) {
                 if (data.hasOwnProperty(i) && data[i][user.address]) {
 
@@ -33,16 +33,11 @@ export const MyDonations = () => {
 
                     d.push({
                         campaignTitle: (await ethService.getCampaign(i)).title,
+                        campaignAddress: i,
                         transactions: tx,
-                        donations: [{
-                            transactions: [{
-                                transactions: tx
-                            }]
-                        }]
                     })
                 }
             }
-            console.log('transactions', d);
             setDonations(d);
         }
         catch (e) {
@@ -55,10 +50,16 @@ export const MyDonations = () => {
         <Container>
             <h1 className='text-center my-5' style={{ fontWeight: 'bold' }}> Donations</h1>
             {
+                donations?.length === 0 &&
+                <div>You don't have any donations yet..!</div>
+            }
+            {
                 donations.map(d =>
                     <Card style={{ boxShadow: '0 10px 10px rgba(0, 0, 0, 0.2)' }} className='my-5 text-center'>
                         <Card.Header as="h5">
-                            Campaign Name: {d.campaignTitle}
+                            <Link to={`campaign${d.campaignAddress}`}>
+                                Campaign Name: {d.campaignTitle}
+                            </Link>
                         </Card.Header>
                         <Card.Body>
                             <Row>

@@ -15,7 +15,8 @@ let initialState = {
         //account address user provided while signing up
         isUserAccountSelected: true
     },
-    user: {}
+    user: {},
+    transactionStates: {}
 }
 
 // Create context

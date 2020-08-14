@@ -1,19 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { LoadingButton } from '../LoadingButton/LoadingButton';
 import * as ethService from '../../services/ethereum/ethService';
 import { showError } from '../../store/actions/alertAction';
-import { useStore } from '../../context/GlobalState';
-import { FaPlus, FaMinus, FaChevronCircleRight, FaTrashAlt } from 'react-icons/fa';
-import { Button, Row, Col, Badge } from 'react-bootstrap';
+import { FaPlus, FaMinus, FaTrashAlt } from 'react-icons/fa';
+import { Button, Badge } from 'react-bootstrap';
 import { RecipientList } from '../RecipientList/RecipientList';
+import { useStore } from '../../context/GlobalState';
+import { addTransactionState, setTransactionState } from '../../store/actions/transactionStatesActions';
 
 export const FundRequest = ({ data, isManager, loadCampaignDetails, campaign }) => {
-    console.log(data);
-    const [_, dispatch] = useStore();
+    const processKey = `FUND_REQUEST_PROCESS_${campaign.address}_${data.index}`;
+    const closeKey = `FUND_REQUEST_CLOSE_${campaign.address}_${data.index}`;
+
+    const [{ transactionStates }, dispatch] = useStore();
+    const isProcessing = transactionStates[processKey];
+    const isClosing = transactionStates[closeKey];
+
     const [showDetails, setshowDetails] = useState(false);
-    const [isProcessing, setIsProcessing] = useState(false);
-    const [isApproving, setIsApproving] = useState(false);
-    const [isClosing, setIsClosing] = useState(false);
+
+    useEffect(() => {
+        dispatch(addTransactionState(processKey));
+        dispatch(addTransactionState(closeKey));
+    }, [])
 
     const canProcessRequest = new Date(parseInt(campaign.fundRequestProcessTime) * 1000).getTime() + data.createdAt.getTime() < new Date().getTime();
     const canProcessIn = milisecToDayHourMin(new Date(parseInt(campaign.fundRequestProcessTime) * 1000).getTime() + data.createdAt.getTime() - new Date().getTime()) + ' to process.';
@@ -37,7 +45,7 @@ export const FundRequest = ({ data, isManager, loadCampaignDetails, campaign }) 
     }
 
     const processRequest = async (index) => {
-        setIsProcessing(true);
+        dispatch(setTransactionState(true, processKey));
         try {
             await ethService.processFundRequest(campaign.address, index);
             data = await ethService.getSingleFundRequest(campaign.address, data.index);
@@ -45,12 +53,12 @@ export const FundRequest = ({ data, isManager, loadCampaignDetails, campaign }) 
         catch (e) {
             dispatch(showError(e.message));
         }
-        setIsProcessing(false);
+        dispatch(setTransactionState(false, processKey));
         loadCampaignDetails();
     }
 
     const approveRequest = async (index, approve) => {
-        setIsApproving(true);
+        dispatch(setTransactionState(true, processKey));
         try {
             if (approve) {
                 await ethService.approveFundRequest(campaign.address, index);
@@ -62,18 +70,20 @@ export const FundRequest = ({ data, isManager, loadCampaignDetails, campaign }) 
         catch (e) {
             dispatch(showError(e.message));
         }
-        setIsApproving(false);
+        dispatch(setTransactionState(false, processKey));
+        loadCampaignDetails();
     }
 
     const closeRequest = async () => {
-        setIsClosing(true);
+        dispatch(setTransactionState(true, closeKey));
         try {
             await ethService.closeFundRequest(campaign.address, data.index);
         }
         catch (e) {
             dispatch(showError(e.message));
         }
-        setIsClosing(false);
+        dispatch(setTransactionState(false, closeKey));
+        loadCampaignDetails();
     }
 
     return (
@@ -101,13 +111,13 @@ export const FundRequest = ({ data, isManager, loadCampaignDetails, campaign }) 
                                 <LoadingButton isloading={isClosing}
                                     size='sm'
                                     variant='danger'
-                                    disabled={data.isClosed}
+                                    disabled={data.isClosed || data.isCompleted}
                                     onClick={closeRequest}><FaTrashAlt /></LoadingButton>
                             </td>
                         </>
                         :
                         <td>{
-                            <LoadingButton isloading={isApproving}
+                            <LoadingButton isloading={isProcessing}
                                 size='sm'
                                 disabled={data.isCompleted || data.isClosed}
                                 variant={data.isDisapprover ? 'success' : 'danger'}
