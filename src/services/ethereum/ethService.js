@@ -2,7 +2,7 @@ import Web3 from "web3";
 import { abi as CAMPAIGN_ABI } from '../../contract/Campaign.json';
 import { abi as CAMPAIGN_FACTORY_ABI } from '../../contract/CampaignFactory.json';
 import { LOCAL_CAMAPAIGN_FACTORY_ADDRESS, ROPSTEN_CAMAPAIGN_FACTORY_ADDRESS } from '../../contract/CAMPAIGN_FACTORY_ADDRESS';
-import { setCurrentAccount } from '../../store/actions/appStateActions';
+import { setCurrentAccount, setCurrentNetwork, setIsUserAccountSelected } from '../../store/actions/appStateActions';
 import { getUserByAddress } from '../firebase/databaseService';
 
 // var provider = 'http://127.0.0.1:7545';
@@ -10,7 +10,7 @@ var Contract = require('web3-eth-contract');
 Contract.setProvider(Web3.givenProvider);
 
 //set up the campaign factory
-var factoryAddress = LOCAL_CAMAPAIGN_FACTORY_ADDRESS;
+var factoryAddress = ROPSTEN_CAMAPAIGN_FACTORY_ADDRESS;
 let factory = new Contract(CAMPAIGN_FACTORY_ABI, factoryAddress);
 
 let currentAccount;
@@ -18,36 +18,37 @@ let currentAccount;
 //web3 singleton
 let web3 = new Web3(Web3.givenProvider);
 
-export const toChecksumAddress = (address) => {
-    return web3.utils.toChecksumAddress(address);
+//listen for metamask account change
+export const listenAccountChange = (userAddress, dispatch) => {
+    if (web3.givenProvider) {
+        web3.givenProvider.on('accountsChanged', function (accounts) {
+            currentAccount = web3.utils.toChecksumAddress(accounts[0]);
+            dispatch(setCurrentAccount(currentAccount));
+            dispatch(setIsUserAccountSelected(currentAccount === userAddress));
+        });
+    }
 }
 
-//listen for metamask account change
-export const listenAccountChange = (dispatch) => {
-    window.ethereum.on('accountsChanged', function (accounts) {
-        currentAccount = accounts[0];
-        dispatch(setCurrentAccount(accounts[0]));
-    });
+export const listenNetworkChange = (dispatch) => {
+    if (web3.givenProvider) {
+        web3.givenProvider.on('networkChanged', function (networkId) {
+            dispatch(setCurrentNetwork(networkId));
+        });
+    }
 }
 
 export const enable = async (dispatch) => {
     if (web3.givenProvider) {
-        window.ethereum.enable();
-        currentAccount = await getCurrrentAccount();
+        currentAccount = web3.utils.toChecksumAddress((await web3.eth.requestAccounts())[0]);
         dispatch(setCurrentAccount(currentAccount));
-
+        const networkId = await web3.eth.net.getId();
+        dispatch(setCurrentNetwork(networkId));
         return true;
     }
     return false;
 }
 
-const getCurrrentAccount = async () => {
-    await Web3.givenProvider.enable();
-
-    //Get accounts
-    const account = await web3.eth.getAccounts();
-    return account[0].toString();
-}
+export const toChecksumAddress = (address) => web3.utils.toChecksumAddress(address);
 
 export const createCampaign = async (title, description, amount, createTimestamp, closeTimestamp) => {
     await factory.methods.createCampaign(
@@ -212,7 +213,7 @@ export const getFundRequestProcessTime = async (address) => {
     return time;
 }
 
-export const deactivate = (address) => {
+export const deactivate = async (address) => {
     let campaign = new Contract(CAMPAIGN_ABI, address);
-    campaign.methods.deactivate().call();
+    await campaign.methods.deactivate().send({ from: currentAccount });
 }

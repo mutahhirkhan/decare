@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import classes from './CampaignDetails.module.css'
-import { FaCalendarAlt, FaUsers, FaExclamationCircle } from 'react-icons/fa';
+import { FaCalendarAlt, FaUsers, FaExclamationCircle, FaTrashAlt } from 'react-icons/fa';
 import { Card, Col, Row, Badge, Form, InputGroup, Alert } from 'react-bootstrap';
 import { LoadingButton } from '../LoadingButton/LoadingButton';
 import * as ethService from '../../services/ethereum/ethService';
@@ -9,14 +9,16 @@ import { showError, showSuccess } from '../../store/actions/alertAction';
 import { useStore } from '../../context/GlobalState';
 import { addTransactionState, setTransactionState } from '../../store/actions/transactionStatesActions';
 
-export const CampaignDetails = ({ campaign, style, loadCampaignDetails }) => {
+export const CampaignDetails = ({ campaign, style, loadCampaignDetails, isManager }) => {
 
     const donationKey = `DONATING_${campaign.address}`;
     const withdrawnKey = `WITHDRAWING_${campaign.address}`;
+    const closeKey = `DEACTIVATING_CAMPAIGN_${campaign.address}`;
 
     const [{ user, transactionStates }, dispatch] = useStore();
     const isDonating = transactionStates[donationKey];
     const isWithdrawing = transactionStates[withdrawnKey];
+    const isClosing = transactionStates[closeKey];
 
     const [amount, setAmount] = useState(0);
     const [isAmountValid, setIsAmountValid] = useState(true);
@@ -25,6 +27,7 @@ export const CampaignDetails = ({ campaign, style, loadCampaignDetails }) => {
     useEffect(() => {
         dispatch(addTransactionState(donationKey));
         dispatch(addTransactionState(withdrawnKey));
+        dispatch(addTransactionState(closeKey));
     }, [])
 
     const amountChanged = (value) => {
@@ -89,6 +92,25 @@ export const CampaignDetails = ({ campaign, style, loadCampaignDetails }) => {
         dispatch(setTransactionState(false, withdrawnKey));
     }
 
+    const deactivateCampaign = async () => {
+        dispatch(setTransactionState(true, closeKey));
+        if (campaign.amountCollected !== campaign.amountSpended) {
+            dispatch(showError('Campaign must not have unspended funds before closing it.'));
+        }
+        else {
+            try {
+                //de activate
+                await ethService.deactivate(campaign.address);
+
+                loadCampaignDetails();
+            }
+            catch (e) {
+                dispatch(showError(e.message));
+            }
+        }
+        dispatch(setTransactionState(false, closeKey));
+    }
+
     return (
         <Card style={style}>
             <Card.Body>
@@ -101,10 +123,16 @@ export const CampaignDetails = ({ campaign, style, loadCampaignDetails }) => {
                     <Col lg='7'>
                         {/* Status */}
                         <Row>
-                            <Col lg='auto' className='ml-auto my-3'>
+                            <Col xs='auto' className='my-3'>
                                 <FaExclamationCircle className='mb-1' /> Status:
                                 <b style={{ color: campaign.status === 'Closed' ? 'red' : campaign.status === 'Goal Pending' ? '#ffcc00' : 'green' }} > {campaign.status}</b>
                             </Col>
+                            {
+                                (isManager && campaign.status === 'Closed') &&
+                                <Col xs='auto' className='ml-auto my-3'>
+                                    <LoadingButton isloading={isClosing} size='sm' variant='danger' onClick={deactivateCampaign}><FaTrashAlt /></LoadingButton>
+                                </Col>
+                            }
                         </Row>
 
                         {/* Start & End Dates */}
@@ -169,17 +197,20 @@ export const CampaignDetails = ({ campaign, style, loadCampaignDetails }) => {
                                     </Form.Group>
                                 </Col>
                                 <Col sm='6'>
-                                    <LoadingButton isloading={isDonating} type='submit' size="lg">Donate Now!</LoadingButton>
+                                    {/* Donate */}
+                                    <LoadingButton isloading={isDonating} disabled={campaign.status === 'Closed'} type='submit' size="lg">Donate Now!</LoadingButton>
                                 </Col>
                             </Row>
 
                         </Form>
+                        {/* Withdraw donation */}
                         {
-                            (campaign.isDonor && campaign.status !== 'Locked') &&
+                            campaign.isDonor &&
                             <Row className='justify-content-end'>
-                                <Col md={{ span: 6, offset: 6 }}><LoadingButton variant='danger' isloading={isWithdrawing} onClick={withdrawDonation}>Withdraw Donation</LoadingButton></Col>
+                                <Col className='mt-2' md={{ span: 6, offset: 6 }}><LoadingButton variant='danger' disabled={campaign.status === 'Locked' || campaign.status === 'Closed'} isloading={isWithdrawing} onClick={withdrawDonation}>Withdraw Donation</LoadingButton></Col>
                             </Row>
                         }
+                        {/* Waiting message */}
                         {
                             (isDonating || isWithdrawing) &&
                             <Alert style={{ marginTop: '10px' }} variant='warning'>Please wait while transaction is in progress...</Alert>

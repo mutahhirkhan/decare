@@ -4,6 +4,7 @@ import { Navbar, Nav, Image, NavDropdown, Spinner } from "react-bootstrap";
 import { Link, useHistory } from 'react-router-dom';
 import { useStore } from '../../context/GlobalState';
 import { signOut } from '../../store/actions/authActions';
+import { setUserDetails } from '../../store/actions/userActions';
 import { v4 as guid } from 'uuid';
 
 
@@ -13,6 +14,7 @@ export const NavigationBar = () => {
 
     const signOutHandler = () => {
         dispatch(signOut());
+        dispatch(setUserDetails(null));
         history.push('/signin');
     }
 

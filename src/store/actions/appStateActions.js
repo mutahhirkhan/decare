@@ -1,4 +1,10 @@
-import { ENABLE_METAMASK, APP_LOADED, SET_CURRENT_ACCOUNT } from './actionTypes';
+import {
+    ENABLE_METAMASK,
+    APP_LOADED,
+    SET_CURRENT_ACCOUNT,
+    SET_CURRENT_NETWORK,
+    SET_IS_USER_ACCOUNT_SELECTED
+} from './actionTypes';
 
 export const metamaskEnabled = () => {
     return {
@@ -16,5 +22,19 @@ export const setCurrentAccount = (accountAddress) => {
     return {
         type: SET_CURRENT_ACCOUNT,
         payload: accountAddress
+    }
+}
+
+export const setIsUserAccountSelected = (value) => {
+    return {
+        type: SET_IS_USER_ACCOUNT_SELECTED,
+        payload: value
+    }
+}
+
+export const setCurrentNetwork = (value) => {
+    return {
+        type: SET_CURRENT_NETWORK,
+        payload: value
     }
 }

@@ -29,7 +29,6 @@ export const CampaignExplorer = props => {
             let c = await ethService.getCampaign(props.match.params.address, user.address);
             c.manager = (await dbService.getUserByAddress(c.managerAddress)).name;
             setCampaign(c);
-            console.log(c);
         }
         catch (e) {
             dispatch(showError(e.message));
@@ -107,11 +106,15 @@ export const CampaignExplorer = props => {
             {
                 loadingCampaign || !campaign ?
                     <Row className='align-items-center justify-content-center my-3'>
-                        <Col md='auto'>
+                        <Col xs='auto'>
                             <Spinner className='text-center' animation="grow" variant="primary" role="status" />
                         </Col>
                     </Row>
-                    : <CampaignDetails style={{ boxShadow: '0 10px 10px rgba(0, 0, 0, 0.2)' }} loadCampaignDetails={loadCampaignDetails} campaign={campaign} />
+                    : <CampaignDetails
+                        isManager={user.address == campaign?.managerAddress}
+                        style={{ boxShadow: '0 10px 10px rgba(0, 0, 0, 0.2)' }}
+                        loadCampaignDetails={loadCampaignDetails}
+                        campaign={campaign} />
             }
 
             <h1 style={{ fontWeight: 'bold' }} className='text-center mt-5 mb-3'>Donations</h1>

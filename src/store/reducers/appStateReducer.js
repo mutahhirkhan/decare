@@ -1,6 +1,16 @@
-import { ENABLE_METAMASK, APP_LOADED, SET_CURRENT_ACCOUNT } from '../actions/actionTypes';
+import {
+    ENABLE_METAMASK, APP_LOADED,
+    SET_CURRENT_ACCOUNT,
+    SET_IS_USER_ACCOUNT_SELECTED,
+    SET_CURRENT_NETWORK
+} from '../actions/actionTypes';
 
-const initialeState = {}
+const initialeState = {
+    isMetamaskEnabled: false,
+    isAppLoaded: false,
+    currentAccount: null,
+    isUserAccountSelected: false
+}
 
 export default (state = initialeState, action) => {
     switch (action.type) {
@@ -18,6 +28,16 @@ export default (state = initialeState, action) => {
             return {
                 ...state,
                 currentAccount: action.payload
+            };
+        case SET_CURRENT_NETWORK:
+            return {
+                ...state,
+                currentNetwork: action.payload
+            };
+        case SET_IS_USER_ACCOUNT_SELECTED:
+            return {
+                ...state,
+                isUserAccountSelected: action.payload
             };
         default:
             return state;

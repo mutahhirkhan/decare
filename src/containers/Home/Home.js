@@ -13,7 +13,7 @@ export const Home = props => {
         marginBottom: '10px',
         color: 'white'
     }
-
+    const pic = 'logo192.png';
     return (
         <div>
             <Row className='flex-row-reverse' style={{ marginRight: '0', marginLeft: '0' }}>

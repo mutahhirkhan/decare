@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Card, Row, Col } from 'react-bootstrap';
+import { Container, Card, Row, Col, Spinner } from 'react-bootstrap';
 import * as dbService from '../../services/firebase/databaseService';
 import * as ethService from '../../services/ethereum/ethService';
 import { showError } from '../../store/actions/alertAction';
@@ -48,27 +48,35 @@ export const MyDonations = () => {
 
     return (
         <Container>
-            <h1 className='text-center my-5' style={{ fontWeight: 'bold' }}> Donations</h1>
+            <h1 className='text-center my-5' style={{ fontWeight: 'bold' }}>My Donations</h1>
             {
-                donations?.length === 0 &&
-                <div>You don't have any donations yet..!</div>
+                (!isLoading && donations?.length === 0) &&
+                <Row className='align-items-center justify-content-center my-3'>
+                    <Col xs='auto'>You don't have any donations yet..!</Col>
+                </Row>
             }
             {
-                donations.map(d =>
-                    <Card style={{ boxShadow: '0 10px 10px rgba(0, 0, 0, 0.2)' }} className='my-5 text-center'>
-                        <Card.Header as="h5">
-                            <Link to={`campaign${d.campaignAddress}`}>
-                                Campaign Name: {d.campaignTitle}
-                            </Link>
-                        </Card.Header>
-                        <Card.Body>
-                            <Row>
-                                <Col>
-                                    <TransactionList transactions={d.transactions} onlyTransaction={true} />
-                                </Col>
-                            </Row>
-                        </Card.Body>
-                    </Card>)
+                isLoading ?
+                    <Row className='align-items-center justify-content-center my-3'>
+                        <Col xs='auto'>
+                            <Spinner className='text-center' animation="grow" variant="primary" role="status" />
+                        </Col>
+                    </Row>
+                    : donations.map(d =>
+                        <Card style={{ boxShadow: '0 10px 10px rgba(0, 0, 0, 0.2)' }} className='my-5 text-center'>
+                            <Card.Header as="h5">
+                                <Link to={`campaign${d.campaignAddress}`}>
+                                    Campaign Name: {d.campaignTitle}
+                                </Link>
+                            </Card.Header>
+                            <Card.Body>
+                                <Row>
+                                    <Col>
+                                        <TransactionList transactions={d.transactions} onlyTransaction={true} />
+                                    </Col>
+                                </Row>
+                            </Card.Body>
+                        </Card>)
             }
         </Container>
     )

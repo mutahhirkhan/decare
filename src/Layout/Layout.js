@@ -1,8 +1,12 @@
 import React, { Suspense, useEffect } from 'react'
-import { Route, Switch } from 'react-router-dom';
+import { Route, Switch, useHistory } from 'react-router-dom';
 import { useStore } from '../context/GlobalState';
-import { setupApp } from '../startup/startup';
-import { Spinner } from 'react-bootstrap';
+import { setIsUserAccountSelected, metamaskEnabled, appLoaded } from '../store/actions/appStateActions';
+import { signOut, authsuccessded } from '../store/actions/authActions';
+import { setUserDetails } from '../store/actions/userActions';
+import { enable, listenAccountChange, listenNetworkChange } from '../services/ethereum/ethService';
+import { onAuthStateChanged } from '../services/firebase/authService';
+import { getUserByEmail } from '../services/firebase/databaseService';
 
 //components
 import { NavigationBar } from '../components/NavigationBar/NavigationBar';
@@ -14,15 +18,63 @@ import { MyDonations } from '../containers/MyDonations/MyDonations';
 import { CreateCampaign } from '../containers/CreateCampaign/CreateCampaign';
 import { AlertsList } from '../components/AlertsList/AlertsList';
 import { MyCampaigns } from '../containers/MyCampaigns/MyCampaigns';
-import { Footer } from '../components/Footer/Footer';
 import { SignIn } from '../components/SignIn/SignIn';
-import { NoMetamaskMessage } from '../components/NoMetamaskMessage/NoMetamaskMessage';
+import { NoMetamaskMessage } from '../components/Messages/NoMetamaskMessage';
+import { InvalidAccountMessage } from '../components/Messages/InvalidAccountMessage';
+import { LoadingMessage } from '../components/Messages/LoadingMessage';
+import { InvalidNetworkMessage } from '../components/Messages/InvalidNetworkMessage';
 
-export const Layout = props => {
-    const [{ appState, auth }, dispatch] = useStore();
+export const Layout = () => {
+    const [{ appState, auth, user }, dispatch] = useStore();
+    const history = useHistory();
+    const networkId = 3;
+    const setupApp = async (dispatch) => {
+
+        //check authentication state
+        onAuthStateChanged(async (user) => {
+            if (user) {
+                //fetch user info
+                const userInfo = await getUserByEmail(user.email);
+
+                //set the user state
+                dispatch(setUserDetails(userInfo));
+
+                //dispatch successfull sign in
+                dispatch(authsuccessded());
+            }
+            else {
+                dispatch(signOut());
+            }
+        });
+
+        //enable metamask
+        const isEnabled = await enable(dispatch);
+        if (isEnabled) {
+            dispatch(metamaskEnabled());
+        }
+
+        dispatch(appLoaded());
+    }
+
+    const signOutHandler = () => {
+        dispatch(signOut());
+        dispatch(setUserDetails(null));
+        history.push('/signin');
+    }
+
     useEffect(() => {
         setupApp(dispatch);
+        listenNetworkChange(dispatch);
     }, []);
+
+    useEffect(() => {
+        //listen account changed event
+        listenAccountChange(user.address, dispatch);
+
+        dispatch(setIsUserAccountSelected(appState.currentAccount === user.address));
+    }, [user]);
+
+
 
     let routes = (
         <Switch>
@@ -45,23 +97,25 @@ export const Layout = props => {
             </Switch>
         );
     }
-
     return (
         appState.isAppLoaded ?
             appState.isMetamaskEnabled ?
-                <React.Fragment>
-                    {/* Navigation Bar */}
-                    <NavigationBar />
+                appState.isUserAccountSelected || !auth.isAuthenticated ?
+                    appState.currentNetwork == networkId ?
+                        <React.Fragment>
+                            {/* Navigation Bar */}
+                            <NavigationBar />
 
-                    {/* Alerts as notifications */}
-                    <AlertsList />
+                            {/* Alerts as notifications */}
+                            <AlertsList />
 
-                    {/* This will load the proper page according to the given route */}
-                    <Suspense fallback={<p>Loading...</p>}>{routes}</Suspense>
+                            {/* This will load the proper page according to the given route */}
+                            <Suspense fallback={<p>Loading...</p>}>{routes}</Suspense>
 
-                </React.Fragment> : <NoMetamaskMessage />
-            : <div>
-                Wait a moment.......<Spinner animation="grow" variant="primary" role="status" />
-            </div>
+                        </React.Fragment>
+                        : <InvalidNetworkMessage />
+                    : <InvalidAccountMessage address={user.address} signOutHandler={signOutHandler} />
+                : <NoMetamaskMessage />
+            : <LoadingMessage />
     );
 }

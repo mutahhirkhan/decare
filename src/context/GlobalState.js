@@ -4,7 +4,7 @@ import { appReducer } from '../store/reducers/appReducer';
 let initialState = {
     alertList: [],
     auth: {
-        isAuthenticated: true,
+        isAuthenticated: false,
         isLoading: false
     },
     appState: {
@@ -12,8 +12,9 @@ let initialState = {
         isAppLoaded: false,
         currentAccount: null,
         //indicates if the selected metamask account address is the same as the 
-        //account address user provided while signing up
-        isUserAccountSelected: true
+        //account address of curently signed in user
+        isUserAccountSelected: false,
+        currentNetwork: null
     },
     user: {},
     transactionStates: {}
@@ -25,8 +26,6 @@ export const GlobalContext = createContext(initialState);
 // Provider component
 export const GlobalProvider = ({ children }) => {
     const [state, dispatch] = useReducer(appReducer, initialState);
-
-
     return (<GlobalContext.Provider value={[state, dispatch]}>
         {children}
     </GlobalContext.Provider>);

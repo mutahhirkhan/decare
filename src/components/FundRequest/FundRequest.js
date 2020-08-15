@@ -27,21 +27,25 @@ export const FundRequest = ({ data, isManager, loadCampaignDetails, campaign }) 
     const canProcessIn = milisecToDayHourMin(new Date(parseInt(campaign.fundRequestProcessTime) * 1000).getTime() + data.createdAt.getTime() - new Date().getTime()) + ' to process.';
     //helper method
     function milisecToDayHourMin(t) {
-        var cd = 24 * 60 * 60 * 1000,
-            ch = 60 * 60 * 1000,
-            d = Math.floor(t / cd),
-            h = Math.floor((t - d * cd) / ch),
-            m = Math.round((t - d * cd - h * ch) / 60000),
-            pad = function (n) { return n < 10 ? '0' + n : n; };
-        if (m === 60) {
-            h++;
-            m = 0;
+        if (t > 0) {
+
+            var cd = 24 * 60 * 60 * 1000,
+                ch = 60 * 60 * 1000,
+                d = Math.floor(t / cd),
+                h = Math.floor((t - d * cd) / ch),
+                m = Math.round((t - d * cd - h * ch) / 60000),
+                pad = function (n) { return n < 10 ? '0' + n : n; };
+            if (m === 60) {
+                h++;
+                m = 0;
+            }
+            if (h === 24) {
+                d++;
+                h = 0;
+            }
+            return `${d} Days : ${pad(h)} Hours : ${pad(m)} Minutes`;
         }
-        if (h === 24) {
-            d++;
-            h = 0;
-        }
-        return `${d} Days : ${pad(h)} Hours : ${pad(m)} Minutes`;
+        return 'Days: 0 Hours: 0 Minutes: 0';
     }
 
     const processRequest = async (index) => {
@@ -105,7 +109,7 @@ export const FundRequest = ({ data, isManager, loadCampaignDetails, campaign }) 
                                     size='sm'
                                     variant='success'
                                     disabled={data.isCompleted || data.isClosed || !canProcessRequest}
-                                    onClick={() => processRequest(data.index)}>{data.isCompleted ? "Completed" : "Process Request"}</LoadingButton>
+                                    onClick={() => processRequest(data.index)}>{data.isCompleted ? "Completed" : data.isClosed ? "Closed" : "Process Request"}</LoadingButton>
                             }</td>
                             <td>
                                 <LoadingButton isloading={isClosing}

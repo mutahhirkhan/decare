@@ -7,9 +7,9 @@ import * as ethService from '../../services/ethereum/ethService';
 export const Campaigns = () => {
     const [campaigns, setCampaigns] = useState([]);
     const [count, setCount] = useState(0);
+    const [isLoading, setIsLoading] = useState(false)
 
     const loadCampaigns = useCallback(async () => {
-
         //get campaign count
         let newCount = await ethService.getCampaignsCount();
         setCount(newCount);
@@ -44,10 +44,12 @@ export const Campaigns = () => {
                     </Col>
                 </Row>
             }
-            <Row>
+            <Row >
                 <Col>
-                    {campaigns?.length === 0 ? <div>No Campaigns found...!</div>
-                        : <CampaignList campaigns={campaigns} />
+                    {
+                        campaigns?.length === 0 ?
+                            <div>No Campaigns found...!</div>
+                            : <CampaignList campaigns={campaigns} />
                     }
                 </Col>
             </Row>
