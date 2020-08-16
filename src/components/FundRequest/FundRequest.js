@@ -104,6 +104,7 @@ export const FundRequest = ({ data, isManager, loadCampaignDetails, campaign }) 
                 {
                     isManager ?
                         <>
+                            {/* Process Request */}
                             <td>{
                                 <LoadingButton isloading={isProcessing}
                                     size='sm'
@@ -119,11 +120,12 @@ export const FundRequest = ({ data, isManager, loadCampaignDetails, campaign }) 
                                     onClick={closeRequest}><FaTrashAlt /></LoadingButton>
                             </td>
                         </>
+                        // Approve/Disapprove
                         :
                         <td>{
                             <LoadingButton isloading={isProcessing}
                                 size='sm'
-                                disabled={data.isCompleted || data.isClosed}
+                                disabled={data.isCompleted || data.isClosed || !campaign.isDonor}
                                 variant={data.isDisapprover ? 'success' : 'danger'}
                                 onClick={() => approveRequest(data.index, data.isDisapprover)} >{data.isDisapprover ? "Approve" : "Disapprove"}</LoadingButton>
                         }</td>
