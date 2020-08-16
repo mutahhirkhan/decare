@@ -1,15 +1,35 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import { Container, Form, Col, Row, InputGroup, Alert } from 'react-bootstrap';
 import { createCampaign } from '../../store/actions/campaignActions';
 import { useStore } from '../../context/GlobalState';
 import { Formik, Field } from "formik";
 import { useHistory } from 'react-router-dom';
 import { LoadingButton } from '../LoadingButton/LoadingButton';
+import { addTransactionState, setTransactionState } from '../../store/actions/transactionStatesActions';
+import * as yup from 'yup';
 
 export const CreateCampaignForm = () => {
+    const campaginKey = `CREATING_CAMPAIGN`;
 
-    const [{ user }, dispatch] = useStore();
+    const [{ user, transactionStates }, dispatch] = useStore();
+    const isCreating = transactionStates[campaginKey];
     const routeHistory = useHistory();
+
+    useEffect(() => {
+        dispatch(addTransactionState(campaginKey));
+    }, [])
+
+
+    const validationSchema = yup.object({
+        title: yup.string().required('Title is required.'),
+        description: yup.string().required('Description is required.'),
+        amount: yup.number().required('Amount is required').moreThan(0, 'Amount must be greate than zero.'),
+        startDate: yup.date().required(),
+        endDate: yup.date().min(new Date(), 'Closing Date should be greater than current date.')
+    });
+
+    const endDateValue = new Date();
+    endDateValue.setDate(new Date().getDate() + 1);
 
     return (
         <Container>
@@ -19,12 +39,12 @@ export const CreateCampaignForm = () => {
                     title: '',
                     description: '',
                     amount: 0,
-                    startDate: `${new Date().getFullYear()}-${new Date().getMonth()}-${new Date().getDay()}`,
-                    endDate: `${new Date().getFullYear()}-${new Date().getMonth()}-${new Date().getDay()}`,
+                    startDate: new Date().toISOString().substr(0, 10),
+                    endDate: endDateValue.toISOString().substr(0, 10),
                 }}
-
-                onSubmit={async (data, { setSubmitting }) => {
-                    setSubmitting(true);
+                validationSchema={validationSchema}
+                onSubmit={async (data, { resetForm }) => {
+                    dispatch(setTransactionState(false, campaginKey));
                     let campaign = {
                         title: data.title,
                         description: data.description,
@@ -39,53 +59,12 @@ export const CreateCampaignForm = () => {
                     if (address) {
                         routeHistory.push(`/campaign${address}`);
                     }
-                    setSubmitting(false);
+                    resetForm();
+                    dispatch(setTransactionState(false, campaginKey));
 
                 }}
-
-                validate={values => {
-                    const errors = {};
-
-                    // Vaidate Title
-                    if (values.title.length === 0) {
-                        errors.title = 'Title cannot be empty.';
-                    }
-
-                    // Validate Description
-                    if (values.description.length === 0) {
-                        errors.description = 'Description cannot be empty.';
-                    }
-
-                    // Validate Amount
-                    if (isNaN(values.amount)) {
-                        errors.amount = 'Value must be a number.';
-                    } else if (values.amount < 1) {
-                        errors.amount = 'Amount must be greater than zero.';
-                    }
-
-
-                    // Validate Start Date & End Date
-                    if (!values.startDate) {
-                        errors.startDate = 'Date cannot be empty.';
-                    }
-                    if (!values.endDate) {
-                        errors.endDate = 'Date cannot be empty.';
-                    }
-
-                    let start = new Date(values.startDate);
-                    let end = new Date(values.endDate);
-
-                    //start date should always be lesser than the end date
-                    if (start.getTime() >= end.getTime()) {
-                        errors.startDate = 'Start date should be less than end date.';
-                        errors.endDate = 'End date should be greater than end date.';
-                    }
-
-                    return errors;
-                }}
-
             >
-                {({ handleSubmit, errors, touched, isSubmitting }) => (
+                {({ handleSubmit, handleChange, errors, values, touched }) => (
                     <Form onSubmit={handleSubmit}>
 
                         {/* Campaign Title */}
@@ -97,8 +76,8 @@ export const CreateCampaignForm = () => {
 
                         {/* Campaign Description */}
                         <Form.Group controlId="description">
-                            <Form.Label>Campaign Description</Form.Label>
-                            <Field as={Form.Control} type="textarea" rows="6" name='description' isInvalid={touched.description && !!errors.description} />
+                            <Form.Label>Description</Form.Label>
+                            <Form.Control as="textarea" rows="4" value={values.description} onChange={handleChange} name='description' isInvalid={touched.description && !!errors.description} />
                             <Form.Control.Feedback type='invalid'>{errors.description}</Form.Control.Feedback>
                         </Form.Group>
 
@@ -121,7 +100,7 @@ export const CreateCampaignForm = () => {
                             <Col>
                                 <Form.Group controlId="startDate">
                                     <Form.Label>Start Date</Form.Label>
-                                    <Field as={Form.Control} type="date" name='startDate' isInvalid={touched.startDate && !!errors.startDate} />
+                                    <Field as={Form.Control} type="date" disabled={true} name='startDate' isInvalid={touched.startDate && !!errors.startDate} />
                                     <Form.Control.Feedback type='invalid'>{errors.startDate}</Form.Control.Feedback>
                                 </Form.Group>
                             </Col>
@@ -140,13 +119,13 @@ export const CreateCampaignForm = () => {
 
                         <Row className='justify-content-end align-items-end my-4'>
                             {
-                                isSubmitting &&
+                                isCreating &&
                                 <Col>
                                     <Alert style={{ marginBottom: '0' }} variant='warning'>Please wait while transaction is in progress...</Alert>
                                 </Col>
                             }
                             <Col md="auto" >
-                                <LoadingButton isLoading={isSubmitting} type='submit' className='px-5'>
+                                <LoadingButton isLoading={isCreating} type='submit' className='px-5'>
                                     Create
                                 </LoadingButton>
                             </Col>

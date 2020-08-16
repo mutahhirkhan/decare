@@ -69,10 +69,10 @@ export const CreateFundRequest = ({ createRequest, loadCampaignDetails, campaign
                     }}
 
                 >
-                    {({ handleSubmit, handleChange, setFieldValue, errors, isSubmitting, values }) => (
+                    {({ handleSubmit, handleChange, setFieldValue, errors, values }) => (
                         <Form onSubmit={handleSubmit} className='mt-3'>
 
-                            {/* Campaign Description */}
+                            {/* Request Description */}
                             <Form.Group controlId="description">
                                 <Form.Label>Description</Form.Label>
                                 <Form.Control as="textarea" rows="2" value={values.description} onChange={handleChange} name='description' isInvalid={!!errors.description} />

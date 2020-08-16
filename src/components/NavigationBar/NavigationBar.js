@@ -9,8 +9,10 @@ import { v4 as guid } from 'uuid';
 
 
 export const NavigationBar = () => {
-    const [{ auth, user }, dispatch] = useStore();
+    const [{ auth, user, transactionStates }, dispatch] = useStore();
     const history = useHistory();
+
+    const isTransactionRunning = transactionStates.isTransactionRunning;
 
     const signOutHandler = () => {
         dispatch(signOut());
@@ -52,7 +54,7 @@ export const NavigationBar = () => {
 
     return (
         <div>
-            <Navbar expand='lg' bg="primary" variant="dark">
+            <Navbar expand='lg' bg="primary" variant="dark" fixed>
                 {/* Home Icon */}
                 <Navbar.Brand style={{ fontWeight: 'bold' }} href="/">
                     <Image width="30"
@@ -70,7 +72,12 @@ export const NavigationBar = () => {
 
                         {/* Authenticated Links */}
                         {authenticatedNavLinks}
+                        {
+                            isTransactionRunning &&
+                            <Spinner style={{marginTop: '5px'}} animation="grow" variant="light" role="status" />
+                        }
                     </Nav>
+
                 </Navbar.Collapse>
             </Navbar>
         </div>

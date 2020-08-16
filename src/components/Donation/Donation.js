@@ -26,7 +26,7 @@ export const Donation = ({ donation, onlyTransaction }) => {
 
                     {/* Amount */}
                     <td>
-                        <Badge variant="success">{donation.amount}</Badge>
+                        <Badge variant="success">{donation.amount} ETH</Badge>
                     </td>
 
                 </tr >

@@ -35,12 +35,12 @@ export const Layout = () => {
             if (user) {
                 //fetch user info
                 const userInfo = await getUserByEmail(user.email);
-
                 //set the user state
                 dispatch(setUserDetails(userInfo));
 
                 //dispatch successfull sign in
                 dispatch(authsuccessded());
+
             }
             else {
                 dispatch(signOut());

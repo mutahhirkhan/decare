@@ -25,7 +25,7 @@ export const TransactionList = ({ transactions }) => {
                             </td>
                             <td>
                                 {/* Amount */}
-                                <b>{tx.amount}</b>
+                                <b>{tx.amount} ETH</b>
                             </td>
                         </tr>
                     )

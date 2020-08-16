@@ -51,11 +51,12 @@ export const enable = async (dispatch) => {
 export const toChecksumAddress = (address) => web3.utils.toChecksumAddress(address);
 
 export const createCampaign = async (title, description, amount, createTimestamp, closeTimestamp) => {
+    console.log('amount', web3.utils.toWei(amount, 'ether').toString());
     await factory.methods.createCampaign(
         currentAccount,
         title,
         description,
-        amount,
+        web3.utils.toWei(amount, 'ether'),
         createTimestamp,
         closeTimestamp
     ).send({ from: currentAccount });
@@ -77,10 +78,10 @@ export const getCampaign = async (campaignAddress, userAddress) => {
         managerAddress: summary[0],
         title: summary[1],
         description: summary[2],
-        amountInitialGoal: parseInt(summary[3]),
-        amountCollected: parseInt(summary[4]),
-        amountDelegated: parseInt(summary[5]),
-        amountSpended: parseInt(summary[6]),
+        amountInitialGoal: web3.utils.fromWei(summary[3], 'ether').toString(),
+        amountCollected: web3.utils.fromWei(summary[4], 'ether').toString(),
+        amountDelegated: web3.utils.fromWei(summary[5], 'ether').toString(),
+        amountSpended: web3.utils.fromWei(summary[6], 'ether').toString(),
         fundRequestProcessTime: summary[7],
         createdAt: new Date(summary[8] * 1000),
         closedAt: new Date(summary[9] * 1000),
@@ -126,14 +127,13 @@ export const getAllCampaigns = async (callback) => {
 
 export const donate = async (address, amount) => {
     let campaign = new Contract(CAMPAIGN_ABI, address);
-    const tx = await campaign.methods.donate().send({ from: currentAccount, value: amount });
+    const tx = await campaign.methods.donate().send({ from: currentAccount, value: web3.utils.toWei(amount, 'ether').toString() });
     return tx;
 }
 
 export const withdrawDonation = async (address) => {
     let campaign = new Contract(CAMPAIGN_ABI, address);
-    let amount = await campaign.methods.withdrawDonation().send({ from: currentAccount });
-    return amount;
+    await campaign.methods.withdrawDonation().send({ from: currentAccount });
 }
 
 export const getDonorsList = async (address, startIndex, endIndex, callback) => {
@@ -143,6 +143,7 @@ export const getDonorsList = async (address, startIndex, endIndex, callback) => 
         let donor = await campaign.methods.donorsList(i).call();
         if (donor.amount != 0) {
             const user = await getUserByAddress(donor.personAddress);
+            donor.amount = web3.utils.fromWei(donor.amount, 'ether').toString();
             donor.username = user.name;
             callback(donor);
             donors.push(donor);
@@ -153,7 +154,7 @@ export const getDonorsList = async (address, startIndex, endIndex, callback) => 
 
 export const createFundRequest = async (address, description, amount, recipientAddresses, recipientAmount) => {
     let campaign = new Contract(CAMPAIGN_ABI, address);
-    await campaign.methods.createFundRequest(description, amount, recipientAddresses, recipientAmount).send({ from: currentAccount });
+    await campaign.methods.createFundRequest(description, web3.utils.toWei(amount, 'ether').toString(), recipientAddresses, recipientAmount).send({ from: currentAccount });
 }
 
 export const closeFundRequest = async (address, index) => {
@@ -166,14 +167,14 @@ export const getSingleFundRequest = async (address, index) => {
     const req = await campaign.methods.getFundRequest(index).call();
     const request = {
         description: req[0],
-        amount: req[1],
+        amount: web3.utils.fromWei(req[1], 'ether').toString(),
         recipientsCount: req[2],
         disapproversCount: req[3],
         createdAt: new Date(req[4] * 1000),
         isCompleted: req[5],
         isDisapprover: req[6],
         recipients: req[7].map((x, i) => {
-            return { address: x, amount: req[8][i] };
+            return { address: x, amount: web3.utils.fromWei(req[8][i], 'ether').toString() };
         }),
         isClosed: req[9],
         index: index,

@@ -17,7 +17,9 @@ let initialState = {
         currentNetwork: null
     },
     user: {},
-    transactionStates: {}
+    transactionStates: {
+        isTransactionRunning: false
+    }
 }
 
 // Create context

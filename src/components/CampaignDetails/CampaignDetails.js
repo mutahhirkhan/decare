@@ -39,7 +39,7 @@ export const CampaignDetails = ({ campaign, style, loadCampaignDetails, isManage
         if (isNaN(value)) {
             setAmountError('Value must be a number.');
             valid = false;
-        } else if (value < 1) {
+        } else if (value <= 0) {
             setAmountError('Amount must be greater than zero.');
             valid = false;
         }
@@ -83,6 +83,8 @@ export const CampaignDetails = ({ campaign, style, loadCampaignDetails, isManage
 
             //remove donation from db
             await dbService.deleteDonation(campaign.address, user.address);
+
+            dispatch(showSuccess(`Donation withdrawn from campaign.`));
 
             loadCampaignDetails();
         }
