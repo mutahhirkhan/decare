@@ -14,7 +14,7 @@ export const CampaignDetails = ({ campaign, style, loadCampaignDetails, isManage
     const withdrawnKey = `WITHDRAWING_${campaign.address}`;
     const closeKey = `DEACTIVATING_CAMPAIGN_${campaign.address}`;
 
-    const [{ user, transactionStates }, dispatch] = useStore();
+    const [{ user, transactionStates, auth }, dispatch] = useStore();
     const isDonating = transactionStates[donationKey];
     const isWithdrawing = transactionStates[withdrawnKey];
     const isClosing = transactionStates[closeKey];
@@ -199,7 +199,7 @@ export const CampaignDetails = ({ campaign, style, loadCampaignDetails, isManage
                                 </Col>
                                 <Col sm='6'>
                                     {/* Donate */}
-                                    <LoadingButton isloading={isDonating} disabled={campaign.status === 'Closed'} type='submit' size="lg">Donate Now!</LoadingButton>
+                                    <LoadingButton isloading={isDonating} disabled={campaign.status === 'Closed' || !auth.isAuthenticated} type='submit' size="lg">Donate Now!</LoadingButton>
                                 </Col>
                             </Row>
 
