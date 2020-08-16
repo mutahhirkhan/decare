@@ -149,20 +149,20 @@ export const CampaignDetails = ({ campaign, style, loadCampaignDetails, isManage
                         {/* Goal & Collected Amount*/}
                         <Row  >
                             <Col lg className={classes.Amount}>
-                                Required Amount: <Badge variant="danger">{campaign.amountInitialGoal}</Badge>
+                                Required Amount: <Badge variant="danger">{campaign.amountInitialGoal} ETH</Badge>
                             </Col>
                             <Col lg='auto' className={classes.Amount}>
-                                Collected Amount: <Badge variant="info">{campaign.amountCollected}</Badge>
+                                Collected Amount: <Badge variant="info">{campaign.amountCollected} ETH</Badge>
                             </Col>
                         </Row>
 
                         {/* Spended & Delegated Amount*/}
                         <Row  >
                             <Col lg className={classes.Amount}>
-                                Spended Amount: <Badge variant="success">{campaign.amountSpended}</Badge>
+                                Spended Amount: <Badge variant="success">{campaign.amountSpended} ETH</Badge>
                             </Col>
                             <Col lg='auto' className={classes.Amount}>
-                                Delegated Amount: <Badge variant="warning">{campaign.amountDelegated}</Badge>
+                                Delegated Amount: <Badge variant="warning">{campaign.amountDelegated} ETH</Badge>
                             </Col>
                         </Row>
 
