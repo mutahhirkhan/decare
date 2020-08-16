@@ -30,7 +30,7 @@ export const NavigationBar = () => {
             </NavDropdown>,
 
             <Nav.Link key={guid()} className='mx-3' as={Link} to='/my_donations' href='#my_donations'>My Donations</Nav.Link>,
-            <Nav.Link key={guid()} className='mx-3' href='https://github.com/AbdulRafaySiddiqui/' target="_blank">Github</Nav.Link>
+            <Nav.Link key={guid()} className='mx-3' href='https://github.com/AbdulRafaySiddiqui/decare/' target="_blank">Github</Nav.Link>
         ];
         const spinner = <Spinner animation="grow" variant="light" role="status" />;
 
