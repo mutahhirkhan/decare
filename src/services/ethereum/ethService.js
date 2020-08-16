@@ -1,7 +1,6 @@
 import Web3 from "web3";
 import { abi as CAMPAIGN_ABI } from '../../contract/Campaign.json';
 import { abi as CAMPAIGN_FACTORY_ABI } from '../../contract/CampaignFactory.json';
-import { LOCAL_CAMAPAIGN_FACTORY_ADDRESS, ROPSTEN_CAMAPAIGN_FACTORY_ADDRESS } from '../../contract/CAMPAIGN_FACTORY_ADDRESS';
 import { setCurrentAccount, setCurrentNetwork, setIsUserAccountSelected } from '../../store/actions/appStateActions';
 import { getUserByAddress, getCampaginFactoryAddress } from '../firebase/databaseService';
 
@@ -13,8 +12,8 @@ var Contract = require('web3-eth-contract');
 Contract.setProvider(Web3.givenProvider || infuraEndpoint);
 
 //set up the campaign factory
-let factoryAddress = ROPSTEN_CAMAPAIGN_FACTORY_ADDRESS;
-let factory = new Contract(CAMPAIGN_FACTORY_ABI, factoryAddress);
+let factoryAddress;
+let factory;
 
 let currentAccount;
 
