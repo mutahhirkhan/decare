@@ -3,20 +3,24 @@ import { abi as CAMPAIGN_ABI } from '../../contract/Campaign.json';
 import { abi as CAMPAIGN_FACTORY_ABI } from '../../contract/CampaignFactory.json';
 import { LOCAL_CAMAPAIGN_FACTORY_ADDRESS, ROPSTEN_CAMAPAIGN_FACTORY_ADDRESS } from '../../contract/CAMPAIGN_FACTORY_ADDRESS';
 import { setCurrentAccount, setCurrentNetwork, setIsUserAccountSelected } from '../../store/actions/appStateActions';
-import { getUserByAddress } from '../firebase/databaseService';
+import { getUserByAddress, getCampaginFactoryAddress } from '../firebase/databaseService';
+
+//infura end point
+const infuraEndpoint = 'https://ropsten.infura.io/v3/d015a88ae875483c80e72a899d7eb8ba';
 
 // var provider = 'http://127.0.0.1:7545';
 var Contract = require('web3-eth-contract');
-Contract.setProvider(Web3.givenProvider);
+Contract.setProvider(Web3.givenProvider || infuraEndpoint);
 
 //set up the campaign factory
-var factoryAddress = ROPSTEN_CAMAPAIGN_FACTORY_ADDRESS;
+let factoryAddress = ROPSTEN_CAMAPAIGN_FACTORY_ADDRESS;
 let factory = new Contract(CAMPAIGN_FACTORY_ABI, factoryAddress);
 
 let currentAccount;
 
+
 //web3 singleton
-let web3 = new Web3(Web3.givenProvider);
+let web3 = new Web3(Web3.givenProvider || infuraEndpoint);
 
 //listen for metamask account change
 export const listenAccountChange = (userAddress, dispatch) => {
@@ -39,9 +43,18 @@ export const listenNetworkChange = (dispatch) => {
 
 export const enable = async (dispatch) => {
     if (web3.givenProvider) {
+
+        //get currnet account
         currentAccount = web3.utils.toChecksumAddress((await web3.eth.requestAccounts())[0]);
         dispatch(setCurrentAccount(currentAccount));
+
+        //get network id
         const networkId = await web3.eth.net.getId();
+
+        //get campagin factory address from firebase
+        factoryAddress = await getCampaginFactoryAddress();
+        factory = new Contract(CAMPAIGN_FACTORY_ABI, factoryAddress);
+
         dispatch(setCurrentNetwork(networkId));
         return true;
     }
@@ -50,8 +63,9 @@ export const enable = async (dispatch) => {
 
 export const toChecksumAddress = (address) => web3.utils.toChecksumAddress(address);
 
+export const toWei = (value) => web3.utils.toWei(value, 'ether');
+
 export const createCampaign = async (title, description, amount, createTimestamp, closeTimestamp) => {
-    console.log('amount', web3.utils.toWei(amount, 'ether').toString());
     await factory.methods.createCampaign(
         currentAccount,
         title,
@@ -154,7 +168,13 @@ export const getDonorsList = async (address, startIndex, endIndex, callback) => 
 
 export const createFundRequest = async (address, description, amount, recipientAddresses, recipientAmount) => {
     let campaign = new Contract(CAMPAIGN_ABI, address);
-    await campaign.methods.createFundRequest(description, web3.utils.toWei(amount, 'ether').toString(), recipientAddresses, recipientAmount).send({ from: currentAccount });
+    const amounts = recipientAmount.map(i => web3.utils.toWei(i.toString(), 'ether'));
+    await campaign.methods.createFundRequest(
+        description,
+        web3.utils.toWei(amount.toString(), 'ether').toString(),
+        recipientAddresses,
+        amounts
+    ).send({ from: currentAccount });
 }
 
 export const closeFundRequest = async (address, index) => {

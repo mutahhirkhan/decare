@@ -79,6 +79,8 @@ export const Layout = () => {
     let routes = (
         <Switch>
             <Route path="/signin" exact component={SignIn} />
+            <Route path="/campaigns" exact render={props => <Campaigns {...props} />} />
+            <Route path="/campaign/:address" exact component={CampaignExplorer} />
             <Route path="/" render={props => <Home {...props} />} />
         </Switch>
     );
@@ -86,9 +88,9 @@ export const Layout = () => {
     if (auth.isAuthenticated) {
         routes = (
             <Switch>
-                <Route path="/campaigns" exact render={props => <Campaigns {...props} />} />
                 <Route path="/my_campaigns" exact component={MyCampaigns} />
-                <Route path="/campaign:address" exact component={CampaignExplorer} />
+                <Route path="/campaigns" exact render={props => <Campaigns {...props} />} />
+                <Route path="/campaign/:address" exact component={CampaignExplorer} />
                 <Route path="/my_donations" exact component={MyDonations} />
                 <Route path="/profile" exact component={Profile} />
                 <Route path="/create_campaign" exact component={CreateCampaign} />
@@ -99,23 +101,23 @@ export const Layout = () => {
     }
     return (
         appState.isAppLoaded ?
-            appState.isMetamaskEnabled ?
-                appState.isUserAccountSelected || !auth.isAuthenticated ?
-                    appState.currentNetwork == networkId ?
-                        <React.Fragment>
-                            {/* Navigation Bar */}
-                            <NavigationBar />
+            // appState.isMetamaskEnabled ?
+            appState.isUserAccountSelected || !auth.isAuthenticated ?
+                appState.currentNetwork == networkId || !auth.isAuthenticated?
+                    <React.Fragment>
+                        {/* Navigation Bar */}
+                        <NavigationBar />
 
-                            {/* Alerts as notifications */}
-                            <AlertsList />
+                        {/* Alerts as notifications */}
+                        <AlertsList />
 
-                            {/* This will load the proper page according to the given route */}
-                            <Suspense fallback={<p>Loading...</p>}>{routes}</Suspense>
+                        {/* This will load the proper page according to the given route */}
+                        <Suspense fallback={<p>Loading...</p>}>{routes}</Suspense>
 
-                        </React.Fragment>
-                        : <InvalidNetworkMessage />
-                    : <InvalidAccountMessage address={user.address} signOutHandler={signOutHandler} />
-                : <NoMetamaskMessage />
+                    </React.Fragment>
+                    : <InvalidNetworkMessage />
+                : <InvalidAccountMessage address={user.address} signOutHandler={signOutHandler} />
+            // : <NoMetamaskMessage />
             : <LoadingMessage />
     );
 }

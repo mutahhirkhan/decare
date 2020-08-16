@@ -44,7 +44,7 @@ export const CreateCampaignForm = () => {
                 }}
                 validationSchema={validationSchema}
                 onSubmit={async (data, { resetForm }) => {
-                    dispatch(setTransactionState(false, campaginKey));
+                    dispatch(setTransactionState(true, campaginKey));
                     let campaign = {
                         title: data.title,
                         description: data.description,
@@ -125,7 +125,7 @@ export const CreateCampaignForm = () => {
                                 </Col>
                             }
                             <Col md="auto" >
-                                <LoadingButton isLoading={isCreating} type='submit' className='px-5'>
+                                <LoadingButton isloading={isCreating} type='submit' className='px-5'>
                                     Create
                                 </LoadingButton>
                             </Col>

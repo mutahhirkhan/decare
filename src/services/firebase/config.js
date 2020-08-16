@@ -1,4 +1,7 @@
 import firebase from 'firebase';
+import 'firebase/auth';     
+import 'firebase/storage';
+import 'firebase/database'; 
 
 // Set the configuration for your app
 // TODO: Replace with your app's config object

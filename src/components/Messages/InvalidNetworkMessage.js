@@ -7,7 +7,7 @@ export const InvalidNetworkMessage = () => {
         <div className='vh-100 d-flex align-items-center'>
             <Container className='text-center'>
                 <Row >
-                    <Col>Please select Ropsten Test Network to use this Dapp!</Col>
+                    <Col><h3>Please select Ropsten Test Network in Metamask to use this Dapp!</h3></Col>
                 </Row>
             </Container>
         </div>

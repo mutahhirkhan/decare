@@ -8,7 +8,7 @@ import { Badge } from 'react-bootstrap';
 export const Campaign = ({ campaign }) => {
     const history = useHistory();
     return (
-        <div className={classes.Card} onClick={() => history.push(`/campaign${campaign.address}`)}>
+        <div className={classes.Card} onClick={() => history.push(`/campaign/${campaign.address}`)}>
             {/* Title */}
             <h2> {campaign.title} </h2>
 

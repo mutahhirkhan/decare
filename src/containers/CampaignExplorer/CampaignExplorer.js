@@ -78,14 +78,8 @@ export const CampaignExplorer = props => {
     }
 
     const createRequest = async (description, amount, addresses, amounts) => {
-        //check if campaigns has enough funds to create this request
-        if (amount <= campaign.amountCollected - campaign.amountSpended - campaign.amountDelegated) {
-
-            await ethService.createFundRequest(campaign.address, description, amount, addresses, amounts);
-            await loadFundRequests();
-        } else {
-            dispatch(showError("Campaign don't have enough funds to create this request"));
-        }
+        await ethService.createFundRequest(campaign.address, description, amount, addresses, amounts);
+        await loadFundRequests();
     }
 
     useEffect(() => {
@@ -148,7 +142,7 @@ export const CampaignExplorer = props => {
 
                         {/* Create Fund Requests */}
                         {
-                            user.address == campaign?.managerAddress &&
+                            (campaign && user.address == campaign.managerAddress) &&
                             < Tab eventKey='createRequests' title='Create Fund Requests' style={{ marginTop: '10px' }}>
                                 <CreateFundRequest campaign={campaign} loadCampaignDetails={loadCampaignDetails} createRequest={createRequest} />
                             </Tab>

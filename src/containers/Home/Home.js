@@ -5,7 +5,7 @@ import { useStore } from '../../context/GlobalState';
 import { Footer } from '../../components/Footer/Footer';
 
 export const Home = props => {
-    const [{ auth }] = useStore();
+    const [{ auth, appState }] = useStore();
 
     const cardStyle =
     {
@@ -30,10 +30,17 @@ export const Home = props => {
                     <Row className='align-items-center justify-content-center '>
                         {
                             !auth.isAuthenticated ?
-                                <Button size='lg' className='px-5' onClick={() => props.history.push('/signin')}>Sign In</Button>
+                                <Button size='lg' disabled={!appState.isMetamaskEnabled} className='px-5' onClick={() => props.history.push('/signin')}>Sign In</Button>
                                 : null
                         }
+
                     </Row>
+                    {
+                        !appState.isMetamaskEnabled &&
+                        <Row className='align-items-center justify-content-center '>
+                            <Col xs='auto'>You need Metamask to sign in/up</Col>
+                        </Row>
+                    }
                 </Col>
             </Row>
 

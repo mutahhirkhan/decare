@@ -26,10 +26,10 @@ export const CreateFundRequest = ({ createRequest, loadCampaignDetails, campaign
         if (recipients) {
             recipients.forEach((value, i) => {
                 if (i != index)
-                    sum += parseInt(numOr0(value.amount));
+                    sum += parseFloat(numOr0(value.amount));
             });
         }
-        return sum + parseInt(numOr0(value));
+        return sum + parseFloat(numOr0(value));
     }
 
     const schema = yup.object({
@@ -58,12 +58,13 @@ export const CreateFundRequest = ({ createRequest, loadCampaignDetails, campaign
                         dispatch(setTransactionState(true, fundReqKey));
 
                         const addresses = data.recipients.map(i => i.address);
-                        const amounts = data.recipients.map(i => parseInt(i.amount));
+                        const amounts = data.recipients.map(i => i.amount);
+                        resetForm();
+
                         await createRequest(data.description, data.amount, addresses, amounts);
 
                         dispatch(setTransactionState(false, fundReqKey));
 
-                        resetForm();
 
                         loadCampaignDetails();
                     }}

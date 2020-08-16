@@ -10,7 +10,6 @@ import { useStore } from '../../context/GlobalState';
 import { addTransactionState, setTransactionState } from '../../store/actions/transactionStatesActions';
 
 export const CampaignDetails = ({ campaign, style, loadCampaignDetails, isManager }) => {
-
     const donationKey = `DONATING_${campaign.address}`;
     const withdrawnKey = `WITHDRAWING_${campaign.address}`;
     const closeKey = `DEACTIVATING_CAMPAIGN_${campaign.address}`;
@@ -130,9 +129,9 @@ export const CampaignDetails = ({ campaign, style, loadCampaignDetails, isManage
                                 <b style={{ color: campaign.status === 'Closed' ? 'red' : campaign.status === 'Goal Pending' ? '#ffcc00' : 'green' }} > {campaign.status}</b>
                             </Col>
                             {
-                                (isManager && campaign.status === 'Closed') &&
+                                isManager &&
                                 <Col xs='auto' className='ml-auto my-3'>
-                                    <LoadingButton isloading={isClosing} size='sm' variant='danger' onClick={deactivateCampaign}><FaTrashAlt /></LoadingButton>
+                                    <LoadingButton isloading={isClosing} disabled={campaign.status === 'Closed'} size='sm' variant='danger' onClick={deactivateCampaign}><FaTrashAlt /></LoadingButton>
                                 </Col>
                             }
                         </Row>

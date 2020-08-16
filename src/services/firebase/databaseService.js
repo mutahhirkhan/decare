@@ -48,6 +48,9 @@ export const getUserDonations = async (userAddress) => {
     return (await database.ref('donations').orderByChild(`${userAddress}`).once('value')).val();
 }
 
+export const getCampaginFactoryAddress = async () => {
+    return await read('campaignFactoryAddress');
+}
 //donations structure
 // const donations = {
 //     ['campaign address']: {

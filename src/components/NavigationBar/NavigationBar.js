@@ -70,11 +70,17 @@ export const NavigationBar = () => {
                         {/* Home */}
                         <Nav.Link key={guid()} className='mx-3' as={Link} to='/' href='#home'>Home</Nav.Link>
 
+                        {/* All Campaigns */}
+                        {
+                            !auth.isAuthenticated &&
+                            <Nav.Link key={guid()} className='mx-3' as={Link} to='/campaigns' href='#all_campaigns'>Campaigns</Nav.Link>
+                        }
+
                         {/* Authenticated Links */}
                         {authenticatedNavLinks}
                         {
                             isTransactionRunning &&
-                            <Spinner style={{marginTop: '5px'}} animation="grow" variant="light" role="status" />
+                            <Spinner style={{ marginTop: '5px' }} animation="grow" variant="light" role="status" />
                         }
                     </Nav>
 

@@ -65,7 +65,7 @@ export const MyDonations = () => {
                     : donations.map(d =>
                         <Card style={{ boxShadow: '0 10px 10px rgba(0, 0, 0, 0.2)' }} className='my-5 text-center'>
                             <Card.Header as="h5">
-                                <Link to={`campaign${d.campaignAddress}`}>
+                                <Link to={`campaign/${d.campaignAddress}`}>
                                     Campaign Name: {d.campaignTitle}
                                 </Link>
                             </Card.Header>
