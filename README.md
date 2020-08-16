@@ -1,3 +1,7 @@
+A Decentralized Donation Application Base on Ethereum Blockchain.
+Deployed URL: https://de-care-11445.web.app/
+
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
