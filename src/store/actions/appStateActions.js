@@ -13,6 +13,7 @@ export const metamaskEnabled = () => {
 }
 
 export const appLoaded = () => {
+    
     return {
         type: APP_LOADED,
     }

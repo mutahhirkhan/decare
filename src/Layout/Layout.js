@@ -52,7 +52,7 @@ export const Layout = () => {
         if (isEnabled) {
             dispatch(metamaskEnabled());
         }
-
+        
         dispatch(appLoaded());
     }
 
@@ -66,12 +66,18 @@ export const Layout = () => {
         setupApp(dispatch);
         listenNetworkChange(dispatch);
     }, []);
+    useEffect(() => {
+        console.log("appState.isAppLoaded");
+        console.log(appState.isAppLoaded);
+    },[appState.isAppLoaded])
 
     useEffect(() => {
         //listen account changed event
         listenAccountChange(user.address, dispatch);
 
         dispatch(setIsUserAccountSelected(appState.currentAccount === user.address));
+        console.log("user")
+        console.log(user)
     }, [user]);
 
 
