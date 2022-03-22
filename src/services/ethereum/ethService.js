@@ -43,6 +43,7 @@ export const listenNetworkChange = (dispatch) => {
 export const enable = async (dispatch) => {
     //get campagin factory address from firebase
     factoryAddress = await getCampaginFactoryAddress();
+    
     factory = new Contract(CAMPAIGN_FACTORY_ABI, factoryAddress);
     
     if (web3.givenProvider) {
@@ -122,6 +123,7 @@ export const getCampaign = async (campaignAddress, userAddress) => {
 
 export const getCampaignsCount = async () => {
     let count = await factory.methods.getCampaignsCount().call();
+    console.log("count",count);
     return count;
 }
 

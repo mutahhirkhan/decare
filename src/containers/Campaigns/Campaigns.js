@@ -7,7 +7,7 @@ import * as ethService from '../../services/ethereum/ethService';
 export const Campaigns = () => {
     const [campaigns, setCampaigns] = useState([]);
     const [count, setCount] = useState(0);
-    const [isLoading, setIsLoading] = useState(false)
+    // const [isLoading, setIsLoading] = useState(false)
 
     const loadCampaigns = useCallback(async () => {
         //get campaign count

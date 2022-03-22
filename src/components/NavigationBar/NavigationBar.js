@@ -41,7 +41,7 @@ export const NavigationBar = () => {
                 }
                 id="basic-nav-dropdown">
                 <NavDropdown.Item as={Link} to='/profile' href='#profile'>Profile</NavDropdown.Item>
-                <NavDropdown.Item as={Link} href='#signout' onClick={signOutHandler}>Sign Out</NavDropdown.Item>
+                <NavDropdown.Item as={Link} to="" href='#signout' onClick={signOutHandler}>Sign Out</NavDropdown.Item>
             </NavDropdown>;
 
         if (auth.loading) {

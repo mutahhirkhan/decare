@@ -2,22 +2,23 @@ import firebase from 'firebase';
 import 'firebase/auth';     
 import 'firebase/storage';
 import 'firebase/database'; 
+import 'firebase/firestore';
 
 // Set the configuration for your app
 // TODO: Replace with your app's config object
 const firebaseConfig = {
-    apiKey: "AIzaSyC3LNbwxHFGGPl5jKXG3CjBVBrER350fR8",
-    authDomain: "de-care-11445.firebaseapp.com",
-    databaseURL: "https://de-care-11445.firebaseio.com",
-    projectId: "de-care-11445",
-    storageBucket: "de-care-11445.appspot.com",
-    messagingSenderId: "1080234101368",
-    appId: "1:1080234101368:web:83946f7ea4a35d12077b8d",
-    measurementId: "G-KJ4Z9S3NFC"
-};
+    apiKey: "AIzaSyB8cMdUj1VTodhe85kwwJ_g3jMJyHa_e6k",
+    authDomain: "fypdecare.firebaseapp.com",
+    projectId: "fypdecare",
+    storageBucket: "fypdecare.appspot.com",
+    messagingSenderId: "199245709655",
+    appId: "1:199245709655:web:e1b321a748ede6c535fe12",
+    measurementId: "G-WP7GCMCDLT"
+  };
 
 firebase.initializeApp(firebaseConfig);
 
 export const database = firebase.database();
+export const firestore = firebase.firestore();
 export const storage = firebase.storage();
 export const auth = firebase.auth();

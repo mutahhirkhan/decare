@@ -1,4 +1,4 @@
-import { database } from './config';
+import { database, firestore } from './config';
 
 const write = async (node, jsonData) => {
     await database.ref(node).set(jsonData);
@@ -49,7 +49,11 @@ export const getUserDonations = async (userAddress) => {
 }
 
 export const getCampaginFactoryAddress = async () => {
-    return await read('campaignFactoryAddress');
+    const res = await firestore.collection("campaignFactoryAddress").get();
+    const address = res.docs.find(doc => {
+        if(doc.data().value !== "") return doc.data().value;
+    } )
+    return address.data().value;
 }
 //donations structure
 // const donations = {
