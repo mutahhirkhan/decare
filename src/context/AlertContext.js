@@ -53,7 +53,6 @@ export default props => {
                 { type: 'SUCCESS', message: message, wasShown: false, id: guid() }
             ]
         });
-
     }
 
     return (
