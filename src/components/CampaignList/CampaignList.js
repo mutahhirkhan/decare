@@ -8,9 +8,9 @@ export const CampaignList = ({ campaigns }) => {
         <Container style={{ maxWidth: '1300px' }}>
             <Row className='justify-content-center align-content-center'>
                 {
-                    campaigns.map(c =>
+                    campaigns.map((c, index) =>
                         <Col sm='auto' lg='4' md='6'>
-                            <Campaign key={guid()} campaign={c} />
+                            <Campaign key={index+1} campaign={c} />
                         </Col>
                     )
                 }
