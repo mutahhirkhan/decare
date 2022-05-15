@@ -31,6 +31,26 @@ export const CreateCampaignForm = () => {
     const endDateValue = new Date();
     endDateValue.setDate(new Date().getDate() + 1);
 
+    const createCampaign = async (data, formikProps) => {
+        dispatch(setTransactionState(true, campaginKey));
+        let campaign = {
+            title: data.title,
+            description: data.description,
+            amount: data.amount,
+            createTimestamp: Math.floor(new Date(data.startDate).getTime() / 1000),
+            closeTimestamp: Math.floor(new Date(data.endDate).getTime() / 1000)
+        };
+
+        // deploy contract
+        const address = await createCampaign(campaign, user, dispatch);
+
+        if (address) {
+            routeHistory.push(`/campaign${address}`);
+        }
+        formikProps.resetForm();
+        dispatch(setTransactionState(false, campaginKey));
+    }
+
     return (
         <Container>
             <h1 className='my-4 text-center' style={{ fontWeight: 'bold' }}>Create Campaign</h1>
@@ -43,26 +63,27 @@ export const CreateCampaignForm = () => {
                     endDate: endDateValue.toISOString().substr(0, 10),
                 }}
                 validationSchema={validationSchema}
-                onSubmit={async (data, { resetForm }) => {
-                    dispatch(setTransactionState(true, campaginKey));
-                    let campaign = {
-                        title: data.title,
-                        description: data.description,
-                        amount: data.amount,
-                        createTimestamp: Math.floor(new Date(data.startDate).getTime() / 1000),
-                        closeTimestamp: Math.floor(new Date(data.endDate).getTime() / 1000)
-                    };
+                // onSubmit={async (data, { resetForm }) => {
+                //     dispatch(setTransactionState(true, campaginKey));
+                //     let campaign = {
+                //         title: data.title,
+                //         description: data.description,
+                //         amount: data.amount,
+                //         createTimestamp: Math.floor(new Date(data.startDate).getTime() / 1000),
+                //         closeTimestamp: Math.floor(new Date(data.endDate).getTime() / 1000)
+                //     };
 
-                    // deploy contract
-                    const address = await createCampaign(campaign, user, dispatch);
+                //     // deploy contract
+                //     const address = await createCampaign(campaign, user, dispatch);
 
-                    if (address) {
-                        routeHistory.push(`/campaign${address}`);
-                    }
-                    resetForm();
-                    dispatch(setTransactionState(false, campaginKey));
+                //     if (address) {
+                //         routeHistory.push(`/campaign${address}`);
+                //     }
+                //     resetForm();
+                //     dispatch(setTransactionState(false, campaginKey));
 
-                }}
+                // }}
+                onSubmit={(data, formikProps) => createCampaign(data, formikProps)}
             >
                 {({ handleSubmit, handleChange, errors, values, touched }) => (
                     <Form onSubmit={handleSubmit}>
