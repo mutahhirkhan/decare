@@ -44,6 +44,21 @@ export const CreateFundRequest = ({ createRequest, loadCampaignDetails, campaign
         )
     });
 
+    const createFundRequest = async (data, formikrPops) => {
+        dispatch(setTransactionState(true, fundReqKey));
+
+        const addresses = data.recipients.map(i => i.address);
+        const amounts = data.recipients.map(i => i.amount);
+        formikrPops.resetForm();
+
+        await createRequest(data.description, data.amount, addresses, amounts);
+
+        dispatch(setTransactionState(false, fundReqKey));
+
+
+        loadCampaignDetails();
+    }
+
     return (
         campaign.status !== 'Locked' ? <div>Campaign must reach its goal and be Locked before you can create a fund request.</div>
             : <Container>
@@ -54,21 +69,7 @@ export const CreateFundRequest = ({ createRequest, loadCampaignDetails, campaign
                         amount: 0,
                         recipients: []
                     }}
-                    onSubmit={async (data, { resetForm }) => {
-                        dispatch(setTransactionState(true, fundReqKey));
-
-                        const addresses = data.recipients.map(i => i.address);
-                        const amounts = data.recipients.map(i => i.amount);
-                        resetForm();
-
-                        await createRequest(data.description, data.amount, addresses, amounts);
-
-                        dispatch(setTransactionState(false, fundReqKey));
-
-
-                        loadCampaignDetails();
-                    }}
-
+                    onSubmit={(data, formikProps) => createFundRequest(data, formikProps)}
                 >
                     {({ handleSubmit, handleChange, setFieldValue, errors, values }) => (
                         <Form onSubmit={handleSubmit} className='mt-3'>
@@ -161,7 +162,7 @@ export const CreateFundRequest = ({ createRequest, loadCampaignDetails, campaign
                                 <Col md="auto" >
                                     <LoadingButton isloading={isCreating} type='submit' className='px-5'>
                                         Create
-                                </LoadingButton>
+                                    </LoadingButton>
                                 </Col>
                             </Row>
                         </Form>

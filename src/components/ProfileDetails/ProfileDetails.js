@@ -19,6 +19,30 @@ export const ProfileDetails = () => {
         }
     }
 
+    const profileInformatiomn = async (data, formikProps) => {
+        formikProps.setSubmitting(true);
+        let imgUrl = null;
+        if (file) {
+
+            //upload new profile pic (previous file will be overridden)
+            imgUrl = await uploadProfilePic(file, user.address);
+        }
+        //addUser can also update user because it just overrides the data
+        await setUser(user.address,
+            {
+                ...user,
+                name: data.name,
+                organizationName: data.organizationName,
+                bio: data.bio,
+                imgUrl: imgUrl ? imgUrl : user.imgUrl ? user.imgUrl : ''
+            });
+        const userInfo = await getUserByEmail(user.email);
+        console.log(userInfo)
+        dispatch(setUserDetails(userInfo));
+
+        formikProps.setSubmitting(false);
+    }
+
     return (
         <React.Fragment>
             <Container >
@@ -44,30 +68,7 @@ export const ProfileDetails = () => {
                     organizationName: user.organizationName,
                     bio: user.bio
                 }}
-                onSubmit={async (data, { setSubmitting }) => {
-                    setSubmitting(true);
-                    let imgUrl = null;
-                    if (file) {
-
-                        //upload new profile pic (previous file will be overridden)
-                        imgUrl = await uploadProfilePic(file, user.address);
-                    }
-                    //addUser can also update user because it just overrides the data
-                    await setUser(user.address,
-                        {
-                            ...user,
-                            name: data.name,
-                            organizationName: data.organizationName,
-                            bio: data.bio,
-                            imgUrl: imgUrl ? imgUrl : user.imgUrl ? user.imgUrl : ''
-                        });
-
-                    const userInfo = await getUserByEmail(user.email);
-                    dispatch(setUserDetails(userInfo));
-
-                    setSubmitting(false);
-                }}
-
+                onSubmit={(data, formikProps) => profileInformatiomn(data, formikProps)}
                 validate={values => {
                     const errors = {};
                     if (values.name.length === 0) {

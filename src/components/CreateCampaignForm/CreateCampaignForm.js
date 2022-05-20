@@ -63,26 +63,6 @@ export const CreateCampaignForm = () => {
                     endDate: endDateValue.toISOString().substr(0, 10),
                 }}
                 validationSchema={validationSchema}
-                // onSubmit={async (data, { resetForm }) => {
-                //     dispatch(setTransactionState(true, campaginKey));
-                //     let campaign = {
-                //         title: data.title,
-                //         description: data.description,
-                //         amount: data.amount,
-                //         createTimestamp: Math.floor(new Date(data.startDate).getTime() / 1000),
-                //         closeTimestamp: Math.floor(new Date(data.endDate).getTime() / 1000)
-                //     };
-
-                //     // deploy contract
-                //     const address = await createCampaign(campaign, user, dispatch);
-
-                //     if (address) {
-                //         routeHistory.push(`/campaign${address}`);
-                //     }
-                //     resetForm();
-                //     dispatch(setTransactionState(false, campaginKey));
-
-                // }}
                 onSubmit={(data, formikProps) => createCampaign(data, formikProps)}
             >
                 {({ handleSubmit, handleChange, errors, values, touched }) => (
