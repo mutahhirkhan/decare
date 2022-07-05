@@ -38,6 +38,6 @@ export const counterSlice = createSlice({
 export const selectStatus = (state) => state.campaignExplorer.status;
 
 // Action creators are generated for each case reducer function
-export const { increment, decrement, incrementByAmount } = counterSlice.actions
+export const { changeCounterValue } = counterSlice.actions
 
 export default counterSlice.reducer
