@@ -5,21 +5,33 @@ import { setCurrentAccount, setCurrentNetwork, setIsUserAccountSelected } from '
 import { getUserByAddress, getCampaginFactoryAddress } from '../firebase/databaseService';
 
 //infura end point
-const infuraEndpoint = 'https://ropsten.infura.io/v3/d015a88ae875483c80e72a899d7eb8ba';
+let networkVariable = "";
+const ropstenInfuraEndpoint = 'https://ropsten.infura.io/v3/d015a88ae875483c80e72a899d7eb8ba';
+const goerliInfuraEndpoint = 'https://goerli.infura.io/v3/d015a88ae875483c80e72a899d7eb8ba';
 
 // var provider = 'http://127.0.0.1:7545';
 var Contract = require('web3-eth-contract');
-Contract.setProvider(Web3.givenProvider || infuraEndpoint);
+Contract.setProvider(Web3.givenProvider || ropstenInfuraEndpoint);
+
+//web3 singleton
+let web3 = new Web3(Web3.givenProvider || ropstenInfuraEndpoint);
+(async () => {
+
+    const networkId = await web3.eth.net.getId();
+    console.log("network id",networkId);
+    //initialize again if network id is other than ropsten
+    if (networkId === 5)  {
+        Contract.setProvider(Web3.givenProvider || goerliInfuraEndpoint);
+        let web3 = new Web3(Web3.givenProvider || goerliInfuraEndpoint);
+    }
+})();
+
 
 //set up the campaign factory
 let factoryAddress;
 let factory;
 
 let currentAccount;
-
-
-//web3 singleton
-let web3 = new Web3(Web3.givenProvider || infuraEndpoint);
 
 //listen for metamask account change
 export const listenAccountChange = (userAddress, dispatch) => {
@@ -66,6 +78,8 @@ export const enable = async (dispatch) => {
 
 export const toChecksumAddress = (address) => web3.utils.toChecksumAddress(address);
 
+export const isContract = (address) => web3.eth.getCode(address)
+
 export const toWei = (value) => web3.utils.toWei(value, 'ether');
 
 export const createCampaign = async (title, description, amount, createTimestamp, closeTimestamp) => {
@@ -82,45 +96,50 @@ export const createCampaign = async (title, description, amount, createTimestamp
 }
 
 export const getCampaign = async (campaignAddress, userAddress) => {
-    const campaign = new Contract(CAMPAIGN_ABI, campaignAddress);
-    const summary = await campaign.methods.getSummary().call();
-    const donorsCount = await campaign.methods.dononrsCount().call();
-    let isDonor = false;
+    try {
+        const campaign = new Contract(CAMPAIGN_ABI, campaignAddress);
+        const summary = await campaign.methods.getSummary().call();
+        const donorsCount = await campaign.methods.dononrsCount().call();
+        let isDonor = false;
 
-    if (userAddress) {
-        isDonor = await campaign.methods.donors(userAddress).call() != 0;
-    }
+        if (userAddress) {
+            isDonor = (await campaign.methods.donors(userAddress).call()) != 0;
+        }
 
-    let campaignSummary = {
-        managerAddress: summary[0],
-        title: summary[1],
-        description: summary[2],
-        amountInitialGoal: web3.utils.fromWei(summary[3], 'ether').toString(),
-        amountCollected: web3.utils.fromWei(summary[4], 'ether').toString(),
-        amountDelegated: web3.utils.fromWei(summary[5], 'ether').toString(),
-        amountSpended: web3.utils.fromWei(summary[6], 'ether').toString(),
-        fundRequestProcessTime: summary[7],
-        createdAt: new Date(summary[8] * 1000),
-        closedAt: new Date(summary[9] * 1000),
-        donorsListLength: summary[10],
-        fundRequestsCount: summary[11],
-        isActive: summary[12],
-        address: campaignAddress,
-        donorsCount: donorsCount,
-        isDonor: isDonor,
+        let campaignSummary = {
+            managerAddress: summary[0],
+            title: summary[1],
+            description: summary[2],
+            amountInitialGoal: web3.utils.fromWei(summary[3], 'ether').toString(),
+            amountCollected: web3.utils.fromWei(summary[4], 'ether').toString(),
+            amountDelegated: web3.utils.fromWei(summary[5], 'ether').toString(),
+            amountSpended: web3.utils.fromWei(summary[6], 'ether').toString(),
+            fundRequestProcessTime: summary[7],
+            createdAt: new Date(summary[8] * 1000),
+            closedAt: new Date(summary[9] * 1000),
+            donorsListLength: summary[10],
+            fundRequestsCount: summary[11],
+            isActive: summary[12],
+            address: campaignAddress,
+            donorsCount: donorsCount,
+            isDonor: isDonor,
+        }
+        if (campaignSummary.isActive) {
+            if (campaignSummary.amountInitialGoal < campaignSummary.amountCollected && campaignSummary.closedAt.getTime() < new Date().getTime())
+                campaignSummary.status = 'Locked';
+            else if (campaignSummary.amountInitialGoal < campaignSummary.amountCollected)
+                campaignSummary.status = 'Goal Reached';
+            else
+                campaignSummary.status = 'Goal Pending';
+        }
+        else {
+            campaignSummary.status = 'Closed';
+        }
+        return campaignSummary;
+    
+    } catch (error) {
+        console.log(error)
     }
-    if (campaignSummary.isActive) {
-        if (campaignSummary.amountInitialGoal < campaignSummary.amountCollected && campaignSummary.closedAt.getTime() < new Date().getTime())
-            campaignSummary.status = 'Locked';
-        else if (campaignSummary.amountInitialGoal < campaignSummary.amountCollected)
-            campaignSummary.status = 'Goal Reached';
-        else
-            campaignSummary.status = 'Goal Pending';
-    }
-    else {
-        campaignSummary.status = 'Closed';
-    }
-    return campaignSummary;
 }
 
 export const getCampaignsCount = async () => {

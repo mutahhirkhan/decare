@@ -24,18 +24,21 @@ export const MyDonations = () => {
             const data = await dbService.getDonations();
             for (const i in data) {
                 if (data.hasOwnProperty(i) && data[i][user.address]) {
+                    let isContract = await ethService.isContract(i);
+                    if(isContract !== "0x" ) {
 
-                    const element = data[i];
-                    const hashes = Object.keys(element[user.address]);
-                    const amounts = Object.values(element[user.address]);
-
-                    const tx = hashes.map((h, i) => { return { txHash: h, amount: amounts[i] } });
-
-                    d.push({
-                        campaignTitle: (await ethService.getCampaign(i)).title,
-                        campaignAddress: i,
-                        transactions: tx,
-                    })
+                        const element = data[i];
+                        const hashes = Object.keys(element[user.address]);
+                        const amounts = Object.values(element[user.address]);
+                        
+                        const tx = hashes.map((h, i) => { return { txHash: h, amount: amounts[i] } });
+                        
+                        d.push({
+                            campaignTitle: (await ethService.getCampaign(i,user.address)).title,
+                            campaignAddress: i,
+                            transactions: tx,
+                        })
+                    }
                 }
             }
             setDonations(d);
