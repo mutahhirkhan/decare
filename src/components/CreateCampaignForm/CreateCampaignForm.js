@@ -31,7 +31,7 @@ export const CreateCampaignForm = () => {
     const endDateValue = new Date();
     endDateValue.setDate(new Date().getDate() + 1);
 
-    const createCampaign = async (data, formikProps) => {
+    const handleCreateCampaign = async (data, { resetForm }) => {
         dispatch(setTransactionState(true, campaginKey));
         let campaign = {
             title: data.title,
@@ -47,7 +47,7 @@ export const CreateCampaignForm = () => {
         if (address) {
             routeHistory.push(`/campaign${address}`);
         }
-        formikProps.resetForm();
+        resetForm();
         dispatch(setTransactionState(false, campaginKey));
     }
 
@@ -63,7 +63,7 @@ export const CreateCampaignForm = () => {
                     endDate: endDateValue.toISOString().substr(0, 10),
                 }}
                 validationSchema={validationSchema}
-                onSubmit={(data, formikProps) => createCampaign(data, formikProps)}
+                onSubmit={handleCreateCampaign}
             >
                 {({ handleSubmit, handleChange, errors, values, touched }) => (
                     <Form onSubmit={handleSubmit}>
@@ -139,4 +139,3 @@ export const CreateCampaignForm = () => {
 
     )
 }
-

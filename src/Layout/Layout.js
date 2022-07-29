@@ -27,7 +27,8 @@ import { InvalidNetworkMessage } from '../components/Messages/InvalidNetworkMess
 export const Layout = () => {
     const [{ appState, auth, user }, dispatch] = useStore();
     const history = useHistory();
-    const networkId = 3;
+    const ropstenNetworkId = 3;    //ropsten
+    const goerliNetworkId = 5;    //goerli;
     const setupApp = async (dispatch) => {
 
         //check authentication state
@@ -103,7 +104,10 @@ export const Layout = () => {
         appState.isAppLoaded ?
             // appState.isMetamaskEnabled ?
             appState.isUserAccountSelected || !auth.isAuthenticated ?
-                appState.currentNetwork == networkId || !auth.isAuthenticated?
+                (
+                    appState.currentNetwork == ropstenNetworkId || 
+                    appState.currentNetwork == goerliNetworkId
+                ) || !auth.isAuthenticated?
                     <React.Fragment>
                         {/* Navigation Bar */}
                         <NavigationBar />

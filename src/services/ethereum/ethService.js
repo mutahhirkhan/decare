@@ -41,9 +41,15 @@ export const listenNetworkChange = (dispatch) => {
 }
 
 export const enable = async (dispatch) => {
-    //get campagin factory address from firebase
-    factoryAddress = await getCampaginFactoryAddress();
+    //get campagin factory addresses from firebase
+    let factoryAddresses = await getCampaginFactoryAddress();
     
+    //get network id
+    const networkId = await web3.eth.net.getId();
+
+    //select factory address based on network id
+    networkId === 3 ? factoryAddress = factoryAddresses.ropsten : factoryAddress = factoryAddresses.goerli;
+
     factory = new Contract(CAMPAIGN_FACTORY_ABI, factoryAddress);
     
     if (web3.givenProvider) {
@@ -51,10 +57,6 @@ export const enable = async (dispatch) => {
         //get currnet account
         currentAccount = web3.utils.toChecksumAddress((await web3.eth.requestAccounts())[0]);
         dispatch(setCurrentAccount(currentAccount));
-
-        //get network id
-        const networkId = await web3.eth.net.getId();
-
 
         dispatch(setCurrentNetwork(networkId));
         return true;

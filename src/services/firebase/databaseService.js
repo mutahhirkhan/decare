@@ -49,11 +49,10 @@ export const getUserDonations = async (userAddress) => {
 }
 
 export const getCampaginFactoryAddress = async () => {
-    const res = await firestore.collection("campaignFactoryAddress").get();
-    const address = res.docs.find(doc => {
-        if(doc.data().value !== "") return doc.data().value;
-    } )
-    return address.data().value;
+    const {docs: res} = await firestore.collection("campaignFactoryAddress").get();
+    
+    let addresses = res.map(doc => doc.data())?.[0]?.addresses;
+    return addresses;
 }
 //donations structure
 // const donations = {
