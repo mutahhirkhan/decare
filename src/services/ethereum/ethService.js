@@ -18,7 +18,7 @@ let web3 = new Web3(Web3.givenProvider || ropstenInfuraEndpoint);
 (async () => {
 
     const networkId = await web3.eth.net.getId();
-    console.log("network id",networkId);
+    // console.log("network id",networkId);
     //initialize again if network id is other than ropsten
     if (networkId === 5)  {
         Contract.setProvider(Web3.givenProvider || goerliInfuraEndpoint);
@@ -144,7 +144,7 @@ export const getCampaign = async (campaignAddress, userAddress) => {
 
 export const getCampaignsCount = async () => {
     let count = await factory.methods.getCampaignsCount().call();
-    console.log("count",count);
+    // console.log("count",count);
     return count;
 }
 

@@ -44,10 +44,10 @@ export const CampaignExplorer = props => {
         try {
             setDonations([]);
             await ethService.getDonorsList(campaign.address, 1, campaign.donorsListLength, async (d) => {
-                console.log("campaign campaign.address=> ",campaign.address);
-                console.log("user=> ",d);
+                // console.log("campaign campaign.address=> ",campaign.address);
+                // console.log("user=> ",d);
                 const tx = await dbService.getTransaction(campaign.address, d.personAddress);
-                console.log("transaction=>",tx)
+                // console.log("transaction=>",tx)
                 d.transactions = Object.keys(tx || {}).map(t => {
                     return { txHash: t, amount: tx[t] }
                 })

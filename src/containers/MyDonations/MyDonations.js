@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom';
 import { TransactionList } from '../../components/TransactionList/TransactionList';
 
 export const MyDonations = () => {
-    const [{ user }, dispatch] = useStore();
+    const [{ user, appState:{currentNetwork} }, dispatch] = useStore();
     const [donations, setDonations] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
 
@@ -75,7 +75,7 @@ export const MyDonations = () => {
                             <Card.Body>
                                 <Row>
                                     <Col>
-                                        <TransactionList transactions={d.transactions} onlyTransaction={true} />
+                                        <TransactionList transactions={d.transactions} network={currentNetwork} onlyTransaction={true} />
                                     </Col>
                                 </Row>
                             </Card.Body>

@@ -2,8 +2,11 @@ import React, { useState } from 'react';
 import { Badge, Button } from 'react-bootstrap';
 import { FaPlus, FaMinus } from 'react-icons/fa';
 import { TransactionList } from '../TransactionList/TransactionList';
+import { useStore } from '../../context/GlobalState';
 
 export const Donation = ({ donation, onlyTransaction }) => {
+    const [{ appState:{currentNetwork} }] = useStore();
+
     const [showDetails, setShowDetails] = useState(!!onlyTransaction);
     return (
 
@@ -36,7 +39,7 @@ export const Donation = ({ donation, onlyTransaction }) => {
                 <tr>
                     <td></td>
                     <td colSpan='3' >
-                        <TransactionList transactions={donation.transactions} />
+                        <TransactionList transactions={donation.transactions} network={currentNetwork} />
                     </td>
                 </tr>
             }

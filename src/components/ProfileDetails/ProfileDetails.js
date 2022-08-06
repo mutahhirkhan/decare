@@ -37,7 +37,7 @@ export const ProfileDetails = () => {
                 imgUrl: imgUrl ? imgUrl : user.imgUrl ? user.imgUrl : ''
             });
         const userInfo = await getUserByEmail(user.email);
-        console.log(userInfo)
+        // console.log(userInfo)
         dispatch(setUserDetails(userInfo));
 
         formikProps.setSubmitting(false);
