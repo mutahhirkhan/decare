@@ -12,7 +12,7 @@ export const FundRequest = ({ data, isManager, loadCampaignDetails, campaign }) 
     const processKey = `FUND_REQUEST_PROCESS_${campaign.address}_${data.index}`;
     const closeKey = `FUND_REQUEST_CLOSE_${campaign.address}_${data.index}`;
 
-    const [{ transactionStates }, dispatch] = useStore();
+    const [{ transactionStates, appState:{currentNetwork} } , dispatch ] = useStore();
     const isProcessing = transactionStates[processKey];
     const isClosing = transactionStates[closeKey];
 
@@ -135,7 +135,7 @@ export const FundRequest = ({ data, isManager, loadCampaignDetails, campaign }) 
                 showDetails &&
                 <tr>
                     <td></td>
-                    <td colSpan='9'><RecipientList recipients={data.recipients} /></td>
+                    <td colSpan='9'><RecipientList recipients={data.recipients} network={currentNetwork} /></td>
                 </tr>
             }
         </React.Fragment>

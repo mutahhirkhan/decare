@@ -3,6 +3,7 @@ import { Badge, Button } from 'react-bootstrap';
 import { FaPlus, FaMinus } from 'react-icons/fa';
 import { TransactionList } from '../TransactionList/TransactionList';
 import { useStore } from '../../context/GlobalState';
+import { getNetworkNameByID } from '../../services/utils';
 
 export const Donation = ({ donation, onlyTransaction }) => {
     const [{ appState:{currentNetwork} }] = useStore();
@@ -24,7 +25,7 @@ export const Donation = ({ donation, onlyTransaction }) => {
 
                     {/* Address */}
                     <td>
-                        <a target='_blank' href={`https://ropsten.etherscan.io/address/${donation.personAddress}`}>{donation.personAddress}</a>
+                        <a target='_blank' href={`https://${getNetworkNameByID(currentNetwork)}.etherscan.io/address/${donation.personAddress}`}>{donation.personAddress}</a>
                     </td>
 
                     {/* Amount */}

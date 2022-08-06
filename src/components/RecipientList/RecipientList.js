@@ -1,8 +1,9 @@
 import React from 'react';
 import { Table } from 'react-bootstrap';
 import { FaChevronCircleRight } from 'react-icons/fa';
+import { getNetworkNameByID } from '../../services/utils';
 
-export const RecipientList = ({ recipients }) => {
+export const RecipientList = ({ recipients, network }) => {
     return (
         <Table style={{ margin: 0 }}>
             <thead>
@@ -21,7 +22,7 @@ export const RecipientList = ({ recipients }) => {
                             </td>
                             <td >
                                 {/* Recipients Address */}
-                                <a target='_blank' href={`https://ropsten.etherscan.io/address/${r.address}`}>{r.address}</a>
+                                <a target='_blank' href={`https://${getNetworkNameByID(network)}.etherscan.io/address/${r.address}`}>{r.address}</a>
                                 {/* </Col> */}
                             </td>
                             <td>

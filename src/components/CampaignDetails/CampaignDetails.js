@@ -8,13 +8,14 @@ import * as dbService from '../../services/firebase/databaseService';
 import { showError, showSuccess } from '../../store/actions/alertAction';
 import { useStore } from '../../context/GlobalState';
 import { addTransactionState, setTransactionState } from '../../store/actions/transactionStatesActions';
+import { getNetworkNameByID } from '../../services/utils';
 
 export const CampaignDetails = ({ campaign, style, loadCampaignDetails, isManager }) => {
     const donationKey = `DONATING_${campaign.address}`;
     const withdrawnKey = `WITHDRAWING_${campaign.address}`;
     const closeKey = `DEACTIVATING_CAMPAIGN_${campaign.address}`;
 
-    const [{ user, transactionStates, auth }, dispatch] = useStore();
+    const [{ user, transactionStates, auth, appState:{currentNetwork} }, dispatch] = useStore();
     const isDonating = transactionStates[donationKey];
     const isWithdrawing = transactionStates[withdrawnKey];
     const isClosing = transactionStates[closeKey];
@@ -179,7 +180,7 @@ export const CampaignDetails = ({ campaign, style, loadCampaignDetails, isManage
                         {/* Campaign Address */}
                         <Row className="my-4">
                             <Col>
-                                Address : <a target='_blank' href={`https://ropsten.etherscan.io/address/${campaign.address}`}>{campaign.address}</a>
+                                Address : <a target='_blank' href={`https://${getNetworkNameByID(currentNetwork)}.etherscan.io/address/${campaign.address}`}>{campaign.address}</a>
                             </Col>
                         </Row>
 
