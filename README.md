@@ -1,5 +1,5 @@
 A Decentralized Donation Application Base on Ethereum Blockchain.
-Deployed URL: fypdecare.web.app/
+Deployed URL: https://fypdecare.web.app/
 
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
